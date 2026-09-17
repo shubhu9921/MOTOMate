@@ -37,6 +37,28 @@ public class DataSeeder {
                 userRepository.save(admin);
             }
 
+            if (!userRepository.existsByEmail("technician@motomate.com")) {
+                User tech = User.builder()
+                        .name("Ravi Technician")
+                        .email("technician@motomate.com")
+                        .password(passwordEncoder.encode("tech123"))
+                        .role(Role.SERVICE_PROVIDER)
+                        .phone("1111111111")
+                        .build();
+                userRepository.save(tech);
+            }
+
+            if (!userRepository.existsByEmail("pickup@motomate.com")) {
+                User pickup = User.builder()
+                        .name("Arjun Logistics")
+                        .email("pickup@motomate.com")
+                        .password(passwordEncoder.encode("pickup123"))
+                        .role(Role.OPERATIONS_MANAGER)
+                        .phone("2222222222")
+                        .build();
+                userRepository.save(pickup);
+            }
+
             if (serviceRepository.count() == 0) {
                 Service doorstepWash = Service.builder()
                         .name("Doorstep Car Wash")

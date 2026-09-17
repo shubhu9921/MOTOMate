@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Calendar, Clock, Car, MapPin, XCircle, ChevronLeft, CheckCircle2, Star, CreditCard, Banknote } from 'lucide-react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
 import api from '../../services/api';
 
 const BookingDetails = () => {
@@ -78,13 +76,13 @@ const BookingDetails = () => {
   const getStatusColor = (status) => {
     switch(status) {
       case 'PENDING': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'CONFIRMED': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'CONFIRMED': return 'bg-zinc-800 text-blue-800 border-yellow-900';
       case 'ASSIGNED': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
       case 'ON_THE_WAY': return 'bg-purple-100 text-purple-800 border-purple-200';
       case 'IN_PROGRESS': return 'bg-orange-100 text-orange-800 border-orange-200';
       case 'COMPLETED': return 'bg-green-100 text-green-800 border-green-200';
       case 'CANCELLED': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-slate-100 text-slate-800 border-slate-200';
+      default: return 'bg-zinc-800 text-zinc-100 border-zinc-800';
     }
   };
 
@@ -98,18 +96,16 @@ const BookingDetails = () => {
   ];
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-slate-50">Loading details...</div>;
+    return <div className="flex items-center justify-center bg-zinc-900">Loading details...</div>;
   }
 
   if (error || !booking) {
     return (
-      <div className="min-h-screen flex flex-col font-sans">
-        <Navbar />
+      <div className="flex flex-col font-sans">
         <div className="flex-grow flex flex-col items-center justify-center">
           <p className="text-red-500 mb-4">{error || 'Booking not found'}</p>
-          <Link to="/my-bookings" className="text-blue-600 hover:underline">Return to My Bookings</Link>
+          <Link to="/my-bookings" className="text-yellow-500 hover:underline">Return to My Bookings</Link>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -117,20 +113,19 @@ const BookingDetails = () => {
   const canCancel = booking.status !== 'COMPLETED' && booking.status !== 'CANCELLED';
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      <Navbar />
-      <main className="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
+    <>
+      <div className="w-full pb-10">
         
-        <Link to="/my-bookings" className="inline-flex items-center text-slate-500 hover:text-blue-600 mb-6 font-medium">
+        <Link to="/my-bookings" className="inline-flex items-center text-zinc-400 hover:text-yellow-400 mb-6 font-medium">
           <ChevronLeft className="w-4 h-4 mr-1" /> Back to My Bookings
         </Link>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+        <div className="bg-zinc-950 rounded-2xl shadow-sm border border-zinc-800 overflow-hidden mb-8">
           {/* Header */}
-          <div className="px-6 py-6 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="px-6 py-6 border-b border-zinc-800 bg-zinc-900 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <p className="text-sm text-slate-500 mb-1">Booking ID: #{booking.id}</p>
-              <h1 className="text-2xl font-bold text-slate-900">{booking.serviceName}</h1>
+              <p className="text-sm text-zinc-400 mb-1">Booking ID: #{booking.id}</p>
+              <h1 className="text-2xl font-bold text-zinc-50">{booking.serviceName}</h1>
             </div>
             <div className={`px-4 py-1.5 rounded-full border text-sm font-bold uppercase tracking-wider ${getStatusColor(booking.status)}`}>
               {booking.status}
@@ -142,10 +137,10 @@ const BookingDetails = () => {
             {/* Timeline */}
             {booking.status !== 'CANCELLED' && (
               <div className="mb-10">
-                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-6">Booking Timeline</h3>
+                <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-6">Booking Timeline</h3>
                 <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center">
-                  <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-slate-200 md:hidden"></div>
-                  <div className="hidden md:block absolute top-4 left-0 right-0 h-0.5 bg-slate-200"></div>
+                  <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-zinc-800 md:hidden"></div>
+                  <div className="hidden md:block absolute top-4 left-0 right-0 h-0.5 bg-zinc-800"></div>
                   
                   {timelineSteps.map((step, index) => {
                     const isCompleted = step.statuses.includes(booking.status);
@@ -153,12 +148,12 @@ const BookingDetails = () => {
                     
                     return (
                       <div key={index} className="relative z-10 flex flex-row md:flex-col items-center gap-4 md:gap-2 mb-6 md:mb-0 pl-8 md:pl-0">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 bg-white transition-colors duration-300 ${
-                          isCompleted ? 'border-blue-600 text-blue-600' : 'border-slate-300 text-slate-300'
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 bg-zinc-950 transition-colors duration-300 ${
+                          isCompleted ? 'border-yellow-600 text-yellow-500' : 'border-zinc-700 text-slate-300'
                         } ${isCurrent && booking.status !== 'COMPLETED' ? 'ring-4 ring-blue-100' : ''}`}>
                           {isCompleted ? <CheckCircle2 size={16} /> : <div className="w-2 h-2 rounded-full bg-slate-300" />}
                         </div>
-                        <span className={`text-xs md:text-sm font-medium ${isCompleted ? 'text-slate-900' : 'text-slate-400'}`}>
+                        <span className={`text-xs md:text-sm font-medium ${isCompleted ? 'text-zinc-50' : 'text-zinc-500'}`}>
                           {step.label}
                         </span>
                       </div>
@@ -171,42 +166,89 @@ const BookingDetails = () => {
             {/* Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Schedule & Location</h3>
+                <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Schedule & Location</h3>
                 <div className="space-y-4">
                   <div className="flex items-start">
-                    <Calendar className="w-5 h-5 text-slate-400 mr-3 mt-0.5" />
+                    <Calendar className="w-5 h-5 text-zinc-500 mr-3 mt-0.5" />
                     <div>
-                      <p className="text-sm text-slate-500">Date & Time</p>
-                      <p className="font-medium text-slate-900">{booking.bookingDate} at {booking.bookingTime}</p>
+                      <p className="text-sm text-zinc-400">Date & Time</p>
+                      <p className="font-medium text-zinc-50">{booking.bookingDate} at {booking.bookingTime}</p>
                     </div>
                   </div>
                   <div className="flex items-start">
-                    <MapPin className="w-5 h-5 text-slate-400 mr-3 mt-0.5" />
+                    <MapPin className="w-5 h-5 text-zinc-500 mr-3 mt-0.5" />
                     <div>
-                      <p className="text-sm text-slate-500">Service Address</p>
-                      <p className="font-medium text-slate-900">Address ID: {booking.addressId}</p>
+                      <p className="text-sm text-zinc-400">Service Address</p>
+                      <p className="font-medium text-zinc-50">Address ID: {booking.addressId}</p>
                     </div>
                   </div>
+                  {booking.serviceMode && (
+                    <div className="flex items-start">
+                      <div className="w-5 h-5 flex items-center justify-center mr-3 mt-0.5">
+                        <span className="text-zinc-500 font-bold uppercase text-[10px]">MODE</span>
+                      </div>
+                      <div>
+                        <p className="text-sm text-zinc-400">Service Mode</p>
+                        <p className="font-medium text-zinc-50">{booking.serviceMode}</p>
+                        {booking.serviceMode === 'HOME' && (
+                          <div className="mt-1 flex flex-col gap-0.5">
+                            <span className="text-[10px] text-zinc-500">{booking.hasSocietyPermission ? '✓ Society Permission' : '✗ No Society Permission'}</span>
+                            <span className="text-[10px] text-zinc-500">{booking.hasWaterAvailability ? '✓ Water Available' : '✗ No Water Info'}</span>
+                            {booking.requiresPickup && <span className="text-[10px] text-zinc-500">✓ Requires Pickup</span>}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div>
-                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Service Details</h3>
+                <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Service Details</h3>
                 <div className="space-y-4">
                   <div className="flex items-start">
-                    <Car className="w-5 h-5 text-slate-400 mr-3 mt-0.5" />
+                    <Car className="w-5 h-5 text-zinc-500 mr-3 mt-0.5" />
                     <div>
-                      <p className="text-sm text-slate-500">Vehicle</p>
-                      <p className="font-medium text-slate-900">{booking.vehicleName}</p>
-                      <p className="text-xs text-slate-500 uppercase">{booking.vehicleNumber}</p>
+                      <p className="text-sm text-zinc-400">Vehicle</p>
+                      <p className="font-medium text-zinc-50">{booking.vehicleName}</p>
+                      <p className="text-xs text-zinc-400 uppercase">{booking.vehicleNumber}</p>
                     </div>
                   </div>
                   {booking.serviceProviderId && (
                     <div className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-blue-600 mr-3 mt-0.5" />
+                      <CheckCircle2 className="w-5 h-5 text-yellow-500 mr-3 mt-0.5" />
                       <div>
-                        <p className="text-sm text-slate-500">Service Provider</p>
-                        <p className="font-medium text-slate-900">Provider #{booking.serviceProviderId}</p>
+                        <p className="text-sm text-zinc-400">Service Provider</p>
+                        <p className="font-medium text-zinc-50">Provider #{booking.serviceProviderId}</p>
+                        {booking.companyIdUrl && (
+                          <a href={booking.companyIdUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-400 underline mr-2">Company ID</a>
+                        )}
+                        {booking.governmentIdUrl && (
+                          <a href={booking.governmentIdUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-400 underline">Govt ID</a>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {booking.status !== 'COMPLETED' && booking.status !== 'CANCELLED' && booking.status !== 'PENDING' && (
+                    <div className="flex items-start bg-zinc-900 p-3 rounded-lg border border-zinc-800">
+                      <div className="mr-3">
+                        {booking.isVerified ? (
+                           <CheckCircle2 className="w-5 h-5 text-green-500" />
+                        ) : (
+                           <div className="w-5 h-5 flex items-center justify-center rounded-full bg-yellow-500/20 text-yellow-500 text-xs font-bold">!</div>
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-sm text-zinc-400">Verification Status</p>
+                        {booking.isVerified ? (
+                          <p className="font-bold text-green-500 text-sm">Verified</p>
+                        ) : (
+                          <>
+                            <p className="font-bold text-yellow-500 text-sm mb-1">Pending Verification</p>
+                            <p className="text-xs text-zinc-300">Share this OTP with the provider:</p>
+                            <p className="text-2xl font-black tracking-widest text-zinc-50 mt-1 bg-black px-3 py-1 rounded inline-block">{booking.verificationOtp}</p>
+                          </>
+                        )}
                       </div>
                     </div>
                   )}
@@ -215,22 +257,22 @@ const BookingDetails = () => {
             </div>
 
             {/* Payment Info */}
-            <div className="pt-6 border-t border-slate-100">
-              <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Payment Summary</h3>
-              <div className="bg-slate-50 p-6 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-6">
+            <div className="pt-6 border-t border-zinc-800">
+              <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Payment Summary</h3>
+              <div className="bg-zinc-900 p-6 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-6">
                 <div>
-                  <p className="text-sm text-slate-500 mb-1">Total Amount</p>
-                  <p className="text-4xl font-extrabold text-blue-600">₹{booking.totalAmount}</p>
+                  <p className="text-sm text-zinc-400 mb-1">Total Amount</p>
+                  <p className="text-4xl font-extrabold text-yellow-500">₹{booking.totalAmount}</p>
                 </div>
                 <div className="flex gap-6">
                   <div className="text-center sm:text-right">
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Method</p>
-                    <div className="flex items-center gap-1 font-semibold text-slate-700">
+                    <p className="text-xs text-zinc-400 uppercase tracking-wider mb-1">Method</p>
+                    <div className="flex items-center gap-1 font-semibold text-zinc-300">
                       <Banknote size={16} /> {booking.paymentMethod || 'CASH'}
                     </div>
                   </div>
                   <div className="text-center sm:text-right">
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Status</p>
+                    <p className="text-xs text-zinc-400 uppercase tracking-wider mb-1">Status</p>
                     <div className={`flex items-center gap-1 font-bold ${booking.paymentStatus === 'PAID' ? 'text-green-600' : 'text-yellow-600'}`}>
                       {booking.paymentStatus || 'PENDING'}
                     </div>
@@ -240,16 +282,16 @@ const BookingDetails = () => {
             </div>
 
             {booking.notes && (
-              <div className="pt-6 border-t border-slate-100">
-                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Additional Notes</h3>
-                <p className="text-slate-700 bg-slate-50 p-4 rounded-md">{booking.notes}</p>
+              <div className="pt-6 border-t border-zinc-800">
+                <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-2">Additional Notes</h3>
+                <p className="text-zinc-300 bg-zinc-900 p-4 rounded-md">{booking.notes}</p>
               </div>
             )}
           </div>
 
           {/* Action Bar */}
           {canCancel && (
-            <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+            <div className="px-6 py-4 bg-zinc-900 border-t border-zinc-800 flex justify-end">
               <button
                 onClick={handleCancel}
                 disabled={cancelling}
@@ -264,9 +306,9 @@ const BookingDetails = () => {
 
         {/* Review Section */}
         {booking.status === 'COMPLETED' && !reviewSubmitted && (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden p-6 md:p-8">
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">Rate Your Service</h2>
-            <p className="text-slate-600 mb-6">How was your experience with MotoMate? Your feedback helps us improve.</p>
+          <div className="bg-zinc-950 rounded-2xl shadow-sm border border-zinc-800 overflow-hidden p-6 md:p-8">
+            <h2 className="text-2xl font-bold text-zinc-50 mb-2">Rate Your Service</h2>
+            <p className="text-zinc-400 mb-6">How was your experience with MotoMate? Your feedback helps us improve.</p>
             
             <form onSubmit={submitReview}>
               <div className="mb-6 flex gap-2">
@@ -291,9 +333,9 @@ const BookingDetails = () => {
               </div>
               
               <div className="mb-6">
-                <label className="block text-sm font-medium text-slate-700 mb-2">Write a review (optional)</label>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">Write a review (optional)</label>
                 <textarea
-                  className="w-full border-slate-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border-zinc-700 rounded-lg shadow-sm focus:ring-yellow-600 focus:border-yellow-600"
                   rows="4"
                   placeholder="Tell us what you liked or what could be better..."
                   value={comment}
@@ -304,7 +346,7 @@ const BookingDetails = () => {
               <button
                 type="submit"
                 disabled={rating === 0 || submittingReview}
-                className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+                className="px-6 py-3 bg-yellow-600 text-zinc-50 font-bold rounded-lg hover:bg-yellow-500 transition disabled:opacity-50"
               >
                 {submittingReview ? 'Submitting...' : 'Submit Review'}
               </button>
@@ -317,14 +359,13 @@ const BookingDetails = () => {
             <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 size={32} />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">Thank you for your review!</h2>
-            <p className="text-slate-600">Your feedback has been successfully submitted.</p>
+            <h2 className="text-2xl font-bold text-zinc-50 mb-2">Thank you for your review!</h2>
+            <p className="text-zinc-400">Your feedback has been successfully submitted.</p>
           </div>
         )}
 
-      </main>
-      <Footer />
-    </div>
+      </div>
+    </>
   );
 };
 

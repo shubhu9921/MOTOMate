@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,13 +44,19 @@ public class AuthService {
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("Error: User is not found."));
 
-        return AuthResponse.builder()
-                .token(jwt)
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .role(user.getRole())
-                .build();
+        List<String> permissions = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(auth -> !auth.startsWith("ROLE_"))
+                .collect(Collectors.toList());
+
+        AuthResponse response = new AuthResponse();
+        response.setToken(jwt);
+        response.setId(user.getId());
+        response.setName(user.getName());
+        response.setEmail(user.getEmail());
+        response.setRole(user.getRole());
+        response.setPermissions(permissions);
+        return response;
     }
 
     public AuthResponse registerUser(RegisterRequest signUpRequest) {
@@ -55,17 +64,22 @@ public class AuthService {
             throw new BadRequestException("Error: Email is already in use!");
         }
 
-        User user = User.builder()
-                .name(signUpRequest.getName())
-                .email(signUpRequest.getEmail())
-                .phone(signUpRequest.getPhone())
-                .password(encoder.encode(signUpRequest.getPassword()))
-                .role(Role.CUSTOMER)
-                .build();
+        User user = new User();
+        user.setName(signUpRequest.getName());
+        user.setEmail(signUpRequest.getEmail());
+        user.setPhone(signUpRequest.getPhone());
+        user.setPassword(encoder.encode(signUpRequest.getPassword()));
+        user.setRole(Role.CUSTOMER);
 
         userRepository.save(user);
 
         // Auto login after registration
         return authenticateUser(new AuthRequest(signUpRequest.getEmail(), signUpRequest.getPassword()));
+    }
+
+    public User getUserFromToken(String token) {
+        String email = jwtUtils.getUserNameFromJwtToken(token);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Error: User is not found."));
     }
 }

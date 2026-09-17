@@ -7,6 +7,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,12 +45,30 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException ex) {
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
+                .success(false)
+                .message("Invalid email or password.")
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(AuthenticationException ex) {
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
+                .success(false)
+                .message(ex.getMessage())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
         ApiResponse<Void> response = ApiResponse.<Void>builder()
                 .success(false)
-                .message("An unexpected error occurred")
-                .errors(List.of(ex.getMessage()))
+                .message("An unexpected error occurred. Please contact support.")
+                .errors(List.of("Internal Server Error"))
                 .build();
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }

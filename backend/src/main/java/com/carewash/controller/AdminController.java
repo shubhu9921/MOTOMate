@@ -4,6 +4,8 @@ import com.carewash.dto.ApiResponse;
 import com.carewash.dto.BookingDto;
 import com.carewash.entity.*;
 import com.carewash.exception.ResourceNotFoundException;
+import com.carewash.exception.BadRequestException;
+import com.carewash.dto.ProviderCreateRequest;
 import com.carewash.repository.*;
 import com.carewash.service.BookingService;
 import com.carewash.service.AuthService;
@@ -12,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -39,6 +43,9 @@ public class AdminController {
     
     @Autowired
     private AuthService authService;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/dashboard")
     public ResponseEntity<?> getDashboardStats() {
@@ -117,5 +124,35 @@ public class AdminController {
     @GetMapping("/providers/available")
     public ResponseEntity<?> getAvailableProviders() {
         return ResponseEntity.ok(Map.of("success", true, "data", providerRepository.findByStatus(ProviderStatus.AVAILABLE)));
+    }
+
+    @PostMapping("/providers")
+    public ResponseEntity<?> createProvider(@Valid @RequestBody ProviderCreateRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new BadRequestException("Email is already in use!");
+        }
+        if (providerRepository.existsByEmployeeCode(request.getEmployeeCode())) {
+            throw new BadRequestException("Employee Code is already in use!");
+        }
+
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(Role.SERVICE_PROVIDER);
+        user = userRepository.save(user);
+
+        ServiceProvider provider = new ServiceProvider();
+        provider.setUser(user);
+        provider.setEmployeeCode(request.getEmployeeCode());
+        provider.setSpecialization(request.getSpecialization() != null ? request.getSpecialization() : ProviderSpecialization.WASHER);
+        provider.setProvidesHomeService(request.getProvidesHomeService());
+        provider.setProvidesStationService(request.getProvidesStationService());
+        provider.setServiceAreaRadius(request.getServiceAreaRadius());
+        provider.setStatus(ProviderStatus.AVAILABLE);
+        
+        providerRepository.save(provider);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Technician created successfully"));
     }
 }

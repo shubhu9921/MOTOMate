@@ -3,22 +3,25 @@ import Navbar from '../components/Navbar';
 import Hero from '../sections/Hero';
 import HowItWorks from '../sections/HowItWorks';
 import Services from '../sections/Services';
-import Pricing from '../sections/Pricing';
-import WhyChooseUs from '../sections/WhyChooseUs';
+import VehicleSelector from '../sections/VehicleSelector';
 import Testimonials from '../sections/Testimonials';
 import FAQ from '../sections/FAQ';
 import Footer from '../components/Footer';
 
+import TrustBar from '../sections/TrustBar';
+import SEO from '../components/SEO';
+
 const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="bg-zinc-900 flex flex-col font-sans">
+      <SEO />
       <Navbar />
-      <main className="flex-grow">
+      <main className="">
         <Hero />
+        <TrustBar />
         <Services />
+        <VehicleSelector />
         <HowItWorks />
-        <Pricing />
-        <WhyChooseUs />
         <Testimonials />
         <FAQ />
       </main>

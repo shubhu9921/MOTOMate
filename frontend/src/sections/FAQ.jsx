@@ -32,34 +32,34 @@ const FAQ = () => {
   ];
 
   return (
-    <section className="py-24 bg-white">
+    <section id="faq" className="py-12 bg-zinc-950">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-sm font-bold text-blue-600 tracking-wide uppercase mb-2">Got Questions?</h2>
-          <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">Frequently Asked Questions</h3>
+        <div className="text-center mb-16 animate-fade-in-up">
+          <h2 className="text-sm font-bold text-yellow-500 tracking-wide uppercase mb-2">Got Questions?</h2>
+          <h3 className="text-3xl md:text-4xl font-extrabold text-zinc-50 mb-4">Frequently Asked Questions</h3>
         </div>
 
         <div className="space-y-4">
           {faqs.map((faq, index) => (
             <div 
               key={index} 
-              className={`border rounded-2xl overflow-hidden transition-colors ${openIndex === index ? 'border-blue-500 bg-blue-50/30' : 'border-slate-200 hover:border-slate-300'}`}
+              className={`border rounded-2xl overflow-hidden transition-colors ${openIndex === index ? 'border-yellow-600 bg-blue-50/30' : 'border-zinc-800 hover:border-slate-300'}`}
             >
               <button
                 className="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none"
                 onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
               >
-                <span className="font-bold text-slate-900 text-lg">{faq.question}</span>
+                <span className="font-bold text-zinc-50 text-lg">{faq.question}</span>
                 {openIndex === index ? (
-                  <ChevronUp className="w-5 h-5 text-blue-600" />
+                  <ChevronUp className="w-5 h-5 text-yellow-500" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-slate-400" />
+                  <ChevronDown className="w-5 h-5 text-zinc-500" />
                 )}
               </button>
               
               {openIndex === index && (
                 <div className="px-6 pb-5 pt-0">
-                  <p className="text-slate-600 leading-relaxed">{faq.answer}</p>
+                  <p className="text-zinc-400 leading-relaxed">{faq.answer}</p>
                 </div>
               )}
             </div>

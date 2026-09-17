@@ -39,6 +39,16 @@ public class VehicleController {
                 .build());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<VehicleDto>> getVehicleById(@PathVariable Long id, Authentication authentication) {
+        VehicleDto vehicle = vehicleService.getVehicleById(authentication.getName(), id);
+        return ResponseEntity.ok(ApiResponse.<VehicleDto>builder()
+                .success(true)
+                .message("Vehicle fetched successfully")
+                .data(vehicle)
+                .build());
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<VehicleDto>> updateVehicle(@PathVariable Long id, @Valid @RequestBody VehicleRequest request, Authentication authentication) {
         VehicleDto vehicle = vehicleService.updateVehicle(authentication.getName(), id, request);

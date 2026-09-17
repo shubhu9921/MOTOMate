@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+Allow: /services
+Allow: /how-it-works
+Allow: /pricing
+Allow: /about
+Allow: /contact
+
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /provider
+Disallow: /profile
+Disallow: /my-bookings
+Disallow: /settings
+Disallow: /super-admin
+Disallow: /operations
+Disallow: /support-staff
+Disallow: /finance
+
+Sitemap: https://www.motormate.com/sitemap.xml

@@ -15,8 +15,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, JpaSpec
     // For Customer
     Page<Booking> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
     
+    List<Booking> findByUserId(Long userId);
+    
     // For Provider
     Page<Booking> findByServiceProviderIdOrderByBookingDateAscBookingTimeAsc(Long providerId, Pageable pageable);
+    
+    List<Booking> findByServiceProviderId(Long providerId);
     
     // Basic stat queries for dashboards
     long countByStatus(BookingStatus status);

@@ -1,0 +1,24 @@
+[PASS] AUTH-001: Valid login
+   Expected: HTTP 200, JWT returned
+   Actual: HTTP 200
+[FAIL] AUTH-002: Wrong password
+   Expected: HTTP 401 or auth error
+   Actual: HTTP 500, {"success":false,"message":"An unexpected error occurred. Please contact support.","data":null,"errors":["Internal Server Error"]}
+[PASS] AUTH-004: Protected API without JWT
+   Expected: HTTP 401/403
+   Actual: HTTP 403
+[PASS] AUTH-006: Tampered JWT
+   Expected: HTTP 401/403
+   Actual: HTTP 403
+[PASS] AUTH-010: CUSTOMER accessing ADMIN API
+   Expected: HTTP 403
+   Actual: HTTP 403
+[PASS] AUTH-011: CUSTOMER accessing TECHNICIAN API
+   Expected: HTTP 403
+   Actual: HTTP 403
+[PASS] RATE-001: Rate limit on /api/auth/login
+   Expected: HTTP 429
+   Actual: HTTP 429
+[PASS] AUTH-018: Oversized Base64 Input
+   Expected: Rejected safely
+   Actual: HTTP 400

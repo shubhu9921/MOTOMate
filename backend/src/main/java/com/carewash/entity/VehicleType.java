@@ -5,5 +5,7 @@ public enum VehicleType {
     SEDAN,
     SUV,
     MUV,
+    LUXURY,
+    BIKE,
     OTHER
 }

@@ -43,6 +43,13 @@ public class CarWashService {
                 .active(service.getActive())
                 .averageRating(avgRating != null ? avgRating : 0.0)
                 .totalReviews(totalReviews != null ? totalReviews : 0L)
+                .category(service.getCategory())
+                .serviceType(service.getServiceType())
+                .vehicleTypeApplicability(service.getVehicleTypeApplicability())
+                .imageUrl(service.getImageUrl())
+                .features(service.getFeatures())
+                .displayOrder(service.getDisplayOrder())
+                .premiumFlag(service.getPremiumFlag())
                 .build();
     }
 }

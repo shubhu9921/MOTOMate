@@ -85,15 +85,15 @@ public class AddressService {
     }
 
     private AddressDto mapToDto(Address address) {
-        return AddressDto.builder()
-                .id(address.getId())
-                .userId(address.getUser().getId())
-                .addressLine(address.getAddressLine())
-                .city(address.getCity())
-                .state(address.getState())
-                .pincode(address.getPincode())
-                .latitude(address.getLatitude())
-                .longitude(address.getLongitude())
-                .build();
+        AddressDto dto = new AddressDto();
+        dto.setId(address.getId());
+        dto.setUserId(address.getUser().getId());
+        dto.setAddressLine(address.getAddressLine());
+        dto.setCity(address.getCity());
+        dto.setState(address.getState());
+        dto.setPincode(address.getPincode());
+        dto.setLatitude(address.getLatitude());
+        dto.setLongitude(address.getLongitude());
+        return dto;
     }
 }

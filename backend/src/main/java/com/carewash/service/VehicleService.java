@@ -34,6 +34,9 @@ public class VehicleService {
                 .brand(request.getBrand())
                 .model(request.getModel())
                 .color(request.getColor())
+                .vehicleImageUrl(request.getVehicleImageUrl())
+                .numberPlateImageUrl(request.getNumberPlateImageUrl())
+                .cleaningAreaImageUrl(request.getCleaningAreaImageUrl())
                 .build();
 
         Vehicle saved = vehicleRepository.save(vehicle);
@@ -47,6 +50,20 @@ public class VehicleService {
         return vehicleRepository.findByUserId(user.getId()).stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
+    }
+
+    public VehicleDto getVehicleById(String email, Long id) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
+
+        if (!vehicle.getUser().getId().equals(user.getId())) {
+            throw new BadRequestException("Unauthorized to access this vehicle");
+        }
+
+        return mapToDto(vehicle);
     }
 
     public VehicleDto updateVehicle(String email, Long id, VehicleRequest request) {
@@ -65,6 +82,9 @@ public class VehicleService {
         vehicle.setBrand(request.getBrand());
         vehicle.setModel(request.getModel());
         vehicle.setColor(request.getColor());
+        vehicle.setVehicleImageUrl(request.getVehicleImageUrl());
+        vehicle.setNumberPlateImageUrl(request.getNumberPlateImageUrl());
+        vehicle.setCleaningAreaImageUrl(request.getCleaningAreaImageUrl());
 
         return mapToDto(vehicleRepository.save(vehicle));
     }
@@ -92,6 +112,9 @@ public class VehicleService {
                 .brand(vehicle.getBrand())
                 .model(vehicle.getModel())
                 .color(vehicle.getColor())
+                .vehicleImageUrl(vehicle.getVehicleImageUrl())
+                .numberPlateImageUrl(vehicle.getNumberPlateImageUrl())
+                .cleaningAreaImageUrl(vehicle.getCleaningAreaImageUrl())
                 .build();
     }
 }

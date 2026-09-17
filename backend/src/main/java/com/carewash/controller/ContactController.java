@@ -19,14 +19,13 @@ public class ContactController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> submitContactMessage(@Valid @RequestBody ContactRequest request) {
-        ContactMessage message = ContactMessage.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .phone(request.getPhone())
-                .subject(request.getSubject())
-                .message(request.getMessage())
-                .status(MessageStatus.NEW)
-                .build();
+        ContactMessage message = new ContactMessage();
+        message.setName(request.getName());
+        message.setEmail(request.getEmail());
+        message.setPhone(request.getPhone());
+        message.setSubject(request.getSubject());
+        message.setMessage(request.getMessage());
+        message.setStatus(MessageStatus.NEW);
                 
         contactMessageRepository.save(message);
         

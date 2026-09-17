@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, Car, UserCircle, LogOut, ChevronDown, Bell } from 'lucide-react';
+import { Menu, X, Car, UserCircle, LogOut, ChevronDown, Bell, Calendar } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -35,6 +35,17 @@ const Navbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   const fetchNotifications = async () => {
     try {
@@ -74,22 +85,23 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="bg-zinc-950 shadow-sm sticky top-0 z-50">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2">
-              <Car className="h-8 w-8 text-blue-600" />
-              <span className="font-bold text-2xl tracking-tight text-slate-900">MOTO<span className="text-blue-600">MATE</span></span>
+              <Car className="h-8 w-8 text-yellow-500" />
+              <span className="font-bold text-2xl tracking-tight text-zinc-50">MOTO<span className="text-yellow-500">MATE</span></span>
             </Link>
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/services" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">Services</Link>
-            <Link to="/how-it-works" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">How It Works</Link>
-            <Link to="/pricing" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">Pricing</Link>
-            <Link to="/about" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">About</Link>
-            <Link to="/contact" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">Contact</Link>
+            <Link to="/services" className="text-zinc-400 hover:text-yellow-400 font-medium transition-colors">Services</Link>
+            <Link to="/how-it-works" className="text-zinc-400 hover:text-yellow-400 font-medium transition-colors">How It Works</Link>
+            <Link to="/pricing" className="text-zinc-400 hover:text-yellow-400 font-medium transition-colors">Pricing</Link>
+            <Link to="/about" className="text-zinc-400 hover:text-yellow-400 font-medium transition-colors">About</Link>
+            <a href="/#reviews" className="text-zinc-400 hover:text-yellow-400 font-medium transition-colors">Reviews</a>
+            <a href="/#faq" className="text-zinc-400 hover:text-yellow-400 font-medium transition-colors">FAQ</a>
             
             <div className="flex items-center space-x-4 ml-4">
               {isAuthenticated ? (
@@ -98,33 +110,33 @@ const Navbar = () => {
                   <div className="relative" ref={notifRef}>
                     <button 
                       onClick={() => { setNotifOpen(!notifOpen); setDropdownOpen(false); }}
-                      className="p-2 text-slate-600 hover:text-blue-600 transition-colors relative"
+                      className="p-2 text-zinc-400 hover:text-yellow-400 transition-colors relative"
                     >
-                      <Bell className="w-5 h-5" />
+                      <Bell className="w-6 h-6" />
                       {unreadCount > 0 && (
-                        <span className="absolute top-1 right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold border-2 border-white">
+                        <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-[10px] text-zinc-50 font-bold">
                           {unreadCount > 9 ? '9+' : unreadCount}
                         </span>
                       )}
                     </button>
 
                     {notifOpen && (
-                      <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden z-50">
-                        <div className="p-3 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                          <span className="font-bold text-slate-900 text-sm">Notifications</span>
+                      <div className="absolute right-0 mt-2 w-80 bg-zinc-950 rounded-xl shadow-lg border border-zinc-800 overflow-hidden z-50">
+                        <div className="p-3 border-b border-zinc-800 flex justify-between items-center bg-zinc-900">
+                          <span className="font-bold text-zinc-50 text-sm">Notifications</span>
                           {unreadCount > 0 && (
-                            <button onClick={handleMarkAllAsRead} className="text-xs text-blue-600 hover:text-blue-800 font-medium">Mark all as read</button>
+                            <button onClick={handleMarkAllAsRead} className="text-xs text-yellow-500 hover:text-blue-800 font-medium">Mark all as read</button>
                           )}
                         </div>
                         <div className="max-h-80 overflow-y-auto">
                           {notifications.length === 0 ? (
-                            <div className="p-4 text-center text-sm text-slate-500">No notifications</div>
+                            <div className="p-4 text-center text-sm text-zinc-400">No notifications</div>
                           ) : (
                             notifications.map(n => (
-                              <div key={n.id} onClick={() => !n.read && handleMarkAsRead(n.id)} className={`p-4 border-b border-slate-50 hover:bg-slate-50 transition cursor-pointer ${!n.read ? 'bg-blue-50/50' : ''}`}>
-                                <p className={`text-sm ${!n.read ? 'font-bold text-slate-900' : 'font-medium text-slate-700'}`}>{n.title}</p>
-                                <p className="text-xs text-slate-500 mt-1 line-clamp-2">{n.message}</p>
-                                <p className="text-[10px] text-slate-400 mt-2">{new Date(n.createdAt).toLocaleString()}</p>
+                              <div key={n.id} onClick={() => !n.read && handleMarkAsRead(n.id)} className={`p-4 border-b border-slate-50 hover:bg-zinc-800 transition cursor-pointer ${!n.read ? 'bg-blue-50/50' : ''}`}>
+                                <p className={`text-sm ${!n.read ? 'font-bold text-zinc-50' : 'font-medium text-zinc-300'}`}>{n.title}</p>
+                                <p className="text-xs text-zinc-400 mt-1 line-clamp-2">{n.message}</p>
+                                <p className="text-[10px] text-zinc-500 mt-2">{new Date(n.createdAt).toLocaleString()}</p>
                               </div>
                             ))
                           )}
@@ -137,25 +149,45 @@ const Navbar = () => {
                   <div className="relative" ref={userRef}>
                     <button 
                       onClick={() => { setDropdownOpen(!dropdownOpen); setNotifOpen(false); }}
-                      className="flex items-center gap-2 text-slate-700 hover:text-blue-600 font-medium pl-2"
+                      className="flex items-center gap-2 text-zinc-300 hover:text-yellow-400 font-medium pl-2"
                     >
-                      <UserCircle className="w-5 h-5" />
-                      <span>{currentUser?.name?.split(' ')[0]}</span>
-                      <ChevronDown className="w-4 h-4" />
+                      <div className="w-8 h-8 rounded-full bg-yellow-600 flex items-center justify-center text-zinc-50 font-bold text-sm">
+                        {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'S'}
+                      </div>
+                      <span className="font-medium">{currentUser?.name?.split(' ')[0] || 's'}</span>
+                      <ChevronDown className="w-4 h-4 text-zinc-400" />
                     </button>
 
                     {dropdownOpen && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 border border-slate-100 z-50">
+                      <div className="absolute right-0 mt-2 w-48 bg-zinc-950 rounded-xl shadow-lg py-2 border border-zinc-800 z-50">
                         {currentUser?.role === 'ADMIN' && (
-                          <Link to="/admin" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600">Admin Dashboard</Link>
+                          <Link to="/admin" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">Admin Dashboard</Link>
                         )}
                         {currentUser?.role === 'SERVICE_PROVIDER' && (
-                          <Link to="/provider" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600">Provider Dashboard</Link>
+                          <Link to="/provider" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">Provider Dashboard</Link>
                         )}
-                        <Link to="/dashboard" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600">Customer Dashboard</Link>
-                        <Link to="/profile" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600">Profile</Link>
-                        <Link to="/my-bookings" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600">My Bookings</Link>
-                        <button onClick={handleLogout} className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                        {currentUser?.role === 'CUSTOMER' ? (
+                          <>
+                            <Link to="/dashboard" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">My Dashboard</Link>
+                            <Link to="/profile" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">My Profile</Link>
+                            <Link to="/vehicles" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">My Vehicles</Link>
+                            <Link to="/my-bookings" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">My Bookings</Link>
+                            <Link to="/history" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">Wash History</Link>
+                            <Link to="/addresses" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">Saved Addresses</Link>
+                            <Link to="/payments" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">Payments</Link>
+                            <Link to="/offers" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">Offers & Coupons</Link>
+                            <Link to="/notifications" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">Notifications</Link>
+                            <Link to="/support" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">Help & Support</Link>
+                            <Link to="/settings" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">Settings</Link>
+                          </>
+                        ) : (
+                          <>
+                            <Link to="/dashboard" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">Customer Dashboard</Link>
+                            <Link to="/profile" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">Profile</Link>
+                            <Link to="/my-bookings" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">My Bookings</Link>
+                          </>
+                        )}
+                        <button onClick={handleLogout} className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 border-t mt-1 pt-2">
                           <LogOut className="w-4 h-4" /> Logout
                         </button>
                       </div>
@@ -163,56 +195,99 @@ const Navbar = () => {
                   </div>
                 </>
               ) : (
-                <Link to="/login" className="text-blue-600 font-medium hover:text-blue-700 transition-colors">Login</Link>
+                <Link to="/login" className="text-yellow-500 font-medium hover:text-yellow-300 transition-colors">Login</Link>
               )}
               
-              <Link to="/book" className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-medium hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg">
-                Book Now
+              <Link to="/book" className="bg-yellow-600 text-zinc-50 px-5 py-2.5 rounded-md font-medium hover:bg-yellow-500 transition-colors shadow-sm flex items-center gap-2">
+                <Calendar className="w-4 h-4" /> Book Now
               </Link>
             </div>
           </div>
 
           <div className="flex items-center md:hidden">
-            <button onClick={() => setIsOpen(!isOpen)} className="text-slate-600 hover:text-blue-600 focus:outline-none">
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            <button onClick={() => setIsOpen(true)} className="text-zinc-400 hover:text-yellow-400 focus:outline-none p-2 -mr-2">
+              <Menu className="h-7 w-7" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {isOpen && (
-        <div className="md:hidden bg-white border-t border-slate-100">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-lg">
-            <Link to="/services" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-md">Services</Link>
-            <Link to="/how-it-works" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-md">How It Works</Link>
-            <Link to="/pricing" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-md">Pricing</Link>
-            <Link to="/about" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-md">About</Link>
-            <Link to="/contact" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-md">Contact</Link>
+      {/* Mobile Menu Overlay */}
+      <div 
+        className={`fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] transition-opacity duration-300 md:hidden ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setIsOpen(false)}
+      />
+
+      {/* Mobile Menu Drawer (Left Side) */}
+      <div 
+        className={`fixed top-0 left-0 h-full w-[85%] max-w-sm bg-zinc-950 z-[70] shadow-2xl transform transition-transform duration-300 ease-in-out md:hidden flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
+        <div className="p-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-900">
+          <Link to="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
+            <Car className="h-7 w-7 text-yellow-500" />
+            <span className="font-bold text-xl tracking-tight text-zinc-50">MOTO<span className="text-yellow-500">MATE</span></span>
+          </Link>
+          <button onClick={() => setIsOpen(false)} className="p-2 text-zinc-400 hover:text-slate-900 bg-zinc-950 rounded-full shadow-sm border border-zinc-800">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
+            {!isAuthenticated || currentUser?.role !== 'CUSTOMER' ? (
+              <>
+                <Link to="/services" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Services</Link>
+                <Link to="/how-it-works" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">How It Works</Link>
+                <Link to="/pricing" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Pricing</Link>
+                <Link to="/about" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">About</Link>
+                <a href="/#reviews" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Reviews</a>
+                <a href="/#faq" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">FAQ</a>
+              </>
+            ) : null}
             
-            <div className="pt-4 border-t border-slate-100 mt-2">
+            <div className={`pt-6 mt-6 ${(!isAuthenticated || currentUser?.role !== 'CUSTOMER') ? 'border-t border-zinc-800' : ''}`}>
               {isAuthenticated ? (
                 <>
-                  <div className="px-3 py-2 text-base font-bold text-slate-900">Hi, {currentUser?.name}</div>
+                  <div className="px-4 py-2 text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">My Account</div>
                   {currentUser?.role === 'ADMIN' && (
-                    <Link to="/admin" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-md">Admin Dashboard</Link>
+                    <Link to="/admin" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Admin Dashboard</Link>
                   )}
                   {currentUser?.role === 'SERVICE_PROVIDER' && (
-                    <Link to="/provider" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-md">Provider Dashboard</Link>
+                    <Link to="/provider" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Provider Dashboard</Link>
                   )}
-                  <Link to="/dashboard" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-md">Dashboard</Link>
-                  <Link to="/profile" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-md">Profile</Link>
-                  <Link to="/my-bookings" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-md">My Bookings</Link>
-                  <button onClick={() => { setIsOpen(false); logout(); }} className="w-full text-left block px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-md">Logout</button>
+                  {currentUser?.role === 'CUSTOMER' ? (
+                    <>
+                      <Link to="/dashboard" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Dashboard</Link>
+                      <Link to="/" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Home</Link>
+                      <Link to="/services" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Services</Link>
+                      <Link to="/pricing" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Pricing</Link>
+                      <Link to="/book" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Book Your Wash</Link>
+                      <Link to="/my-bookings" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">My Bookings</Link>
+                      <Link to="/vehicles" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">My Vehicles</Link>
+                      <Link to="/history" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Wash History</Link>
+                      <Link to="/notifications" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Notifications</Link>
+                      <Link to="/support" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Help & Support</Link>
+                      <Link to="/settings" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Settings</Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/dashboard" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Customer Dashboard</Link>
+                      <Link to="/profile" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Profile</Link>
+                      <Link to="/my-bookings" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">My Bookings</Link>
+                    </>
+                  )}
+                  <button onClick={() => { setIsOpen(false); logout(); }} className="w-full text-left flex items-center gap-2 px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50 rounded-lg mt-2 transition-colors">
+                    <LogOut className="w-5 h-5" /> Logout
+                  </button>
                 </>
               ) : (
-                <Link to="/login" onClick={() => setIsOpen(false)} className="block w-full text-left px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-md">Login</Link>
+                <Link to="/login" onClick={() => setIsOpen(false)} className="block w-full text-center px-4 py-3 text-base font-bold text-zinc-300 hover:text-yellow-400 bg-zinc-800 rounded-xl transition-colors">Login / Register</Link>
               )}
-              <Link to="/book" onClick={() => setIsOpen(false)} className="mt-4 block w-full text-center bg-blue-600 text-white px-4 py-3 rounded-md font-medium hover:bg-blue-700">Book Now</Link>
             </div>
-          </div>
         </div>
-      )}
+        <div className="p-4 border-t border-zinc-800 bg-zinc-950 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
+           <Link to="/book" onClick={() => setIsOpen(false)} className="block w-full text-center bg-yellow-600 text-zinc-50 px-4 py-4 rounded-xl font-bold shadow-md hover:bg-yellow-500 hover:shadow-lg transition-all">Book Your Wash</Link>
+        </div>
+      </div>
     </nav>
   );
 };

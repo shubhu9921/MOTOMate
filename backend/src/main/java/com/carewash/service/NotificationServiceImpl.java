@@ -5,17 +5,21 @@ import com.carewash.entity.NotificationType;
 import com.carewash.entity.User;
 import com.carewash.exception.ResourceNotFoundException;
 import com.carewash.repository.NotificationRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
-@RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
+
+    @Autowired
+    public NotificationServiceImpl(NotificationRepository notificationRepository) {
+        this.notificationRepository = notificationRepository;
+    }
 
     @Override
     @Transactional

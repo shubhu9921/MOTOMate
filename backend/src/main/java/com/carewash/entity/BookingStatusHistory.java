@@ -43,4 +43,19 @@ public class BookingStatusHistory {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime changedAt;
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Booking getBooking() { return booking; }
+    public void setBooking(Booking booking) { this.booking = booking; }
+    public BookingStatus getOldStatus() { return oldStatus; }
+    public void setOldStatus(BookingStatus oldStatus) { this.oldStatus = oldStatus; }
+    public BookingStatus getNewStatus() { return newStatus; }
+    public void setNewStatus(BookingStatus newStatus) { this.newStatus = newStatus; }
+    public User getChangedBy() { return changedBy; }
+    public void setChangedBy(User changedBy) { this.changedBy = changedBy; }
+    public String getRemarks() { return remarks; }
+    public void setRemarks(String remarks) { this.remarks = remarks; }
+    public LocalDateTime getChangedAt() { return changedAt; }
+    public void setChangedAt(LocalDateTime changedAt) { this.changedAt = changedAt; }
 }

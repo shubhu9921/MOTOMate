@@ -40,6 +40,15 @@ public class BookingService {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    @Autowired
+    private ServiceProviderRepository providerRepository;
+
+    @Autowired
+    private ProviderSlotRepository providerSlotRepository;
+
+    @Autowired
+    private AssignmentService assignmentService;
+
     @Transactional
     public BookingDto createBooking(String email, BookingRequest request) {
         User user = userRepository.findByEmail(email)
@@ -76,8 +85,18 @@ public class BookingService {
                 .status(BookingStatus.PENDING)
                 .totalAmount(service.getPrice())
                 .notes(request.getNotes())
+                .serviceMode(request.getServiceMode() != null ? request.getServiceMode() : "STATION")
+                .requiresPickup(request.getRequiresPickup() != null ? request.getRequiresPickup() : false)
+                .hasSocietyPermission(request.getHasSocietyPermission() != null ? request.getHasSocietyPermission() : false)
+                .hasWaterAvailability(request.getHasWaterAvailability() != null ? request.getHasWaterAvailability() : false)
+                .serviceRequirements(request.getServiceRequirements())
+                .verificationOtp(generateOtp())
+                .isVerified(false)
                 .build();
                 
+        // Provider assignment is now handled by AssignmentService
+        // Ignore any frontend providerId and slotId
+
         Booking savedBooking = bookingRepository.save(booking);
 
         // Create Payment
@@ -97,6 +116,9 @@ public class BookingService {
         // Notification
         notificationService.createNotification(user, "Booking Created", 
             "Your booking for " + service.getName() + " has been received.", NotificationType.BOOKING_CREATED);
+
+        // Auto-Assign Technician
+        assignmentService.assignTechnicianToBooking(savedBooking);
 
         return mapToDto(savedBooking);
     }
@@ -226,35 +248,75 @@ public class BookingService {
         }
     }
 
+    private String generateOtp() {
+        return String.format("%04d", new java.util.Random().nextInt(10000));
+    }
+
+    @Transactional
+    public boolean verifyBookingOtp(Long bookingId, String otp) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+        
+        if (booking.getVerificationOtp() != null && booking.getVerificationOtp().equals(otp)) {
+            booking.setIsVerified(true);
+            bookingRepository.save(booking);
+            return true;
+        }
+        return false;
+    }
+
     public void logStatusHistory(Booking booking, BookingStatus oldStatus, BookingStatus newStatus, User changedBy, String remarks) {
-        BookingStatusHistory history = BookingStatusHistory.builder()
-                .booking(booking)
-                .oldStatus(oldStatus != null ? oldStatus : newStatus)
-                .newStatus(newStatus)
-                .changedBy(changedBy)
-                .remarks(remarks)
-                .build();
+        BookingStatusHistory history = new BookingStatusHistory();
+        history.setBooking(booking);
+        history.setOldStatus(oldStatus != null ? oldStatus : newStatus);
+        history.setNewStatus(newStatus);
+        history.setChangedBy(changedBy);
+        history.setRemarks(remarks);
         historyRepository.save(history);
     }
 
     public BookingDto mapToDto(Booking booking) {
-        return BookingDto.builder()
-                .id(booking.getId())
-                .userId(booking.getUser().getId())
-                .serviceId(booking.getService().getId())
-                .serviceName(booking.getService().getName())
-                .vehicleId(booking.getVehicle().getId())
-                .vehicleNumber(booking.getVehicle().getVehicleNumber())
-                .vehicleName(booking.getVehicle().getBrand() + " " + booking.getVehicle().getModel())
-                .addressId(booking.getAddress().getId())
-                .bookingDate(booking.getBookingDate())
-                .bookingTime(booking.getBookingTime())
-                .status(booking.getStatus())
-                .totalAmount(booking.getTotalAmount())
-                .notes(booking.getNotes())
-                .serviceProviderId(booking.getServiceProvider() != null ? booking.getServiceProvider().getId() : null)
-                .paymentMethod(booking.getPayment() != null ? booking.getPayment().getMethod().name() : null)
-                .paymentStatus(booking.getPayment() != null ? booking.getPayment().getStatus().name() : null)
-                .build();
+        BookingDto dto = new BookingDto();
+        dto.setId(booking.getId());
+        dto.setUserId(booking.getUser().getId());
+        dto.setServiceId(booking.getService().getId());
+        dto.setServiceName(booking.getService().getName());
+        dto.setVehicleId(booking.getVehicle().getId());
+        dto.setVehicleNumber(booking.getVehicle().getVehicleNumber());
+        dto.setVehicleName(booking.getVehicle().getBrand() + " " + booking.getVehicle().getModel());
+        dto.setAddressId(booking.getAddress().getId());
+        dto.setBookingDate(booking.getBookingDate());
+        dto.setBookingTime(booking.getBookingTime());
+        dto.setStatus(booking.getStatus());
+        dto.setTotalAmount(booking.getTotalAmount());
+        dto.setNotes(booking.getNotes());
+        dto.setServiceProviderId(booking.getServiceProvider() != null ? booking.getServiceProvider().getId() : null);
+        dto.setPaymentMethod(booking.getPayment() != null ? booking.getPayment().getMethod().name() : null);
+        dto.setPaymentStatus(booking.getPayment() != null ? booking.getPayment().getStatus().name() : null);
+        
+        // Populate newly added fields
+        if (booking.getUser() != null) {
+            dto.setCustomerName(booking.getUser().getName());
+            dto.setCustomerPhone(booking.getUser().getPhone());
+        }
+        if (booking.getAddress() != null) {
+            dto.setAddressLine(booking.getAddress().getAddressLine());
+            dto.setCity(booking.getAddress().getCity());
+            dto.setState(booking.getAddress().getState());
+            dto.setPincode(booking.getAddress().getPincode());
+        }
+        if (booking.getVehicle() != null) {
+            dto.setVehicleImageUrl(booking.getVehicle().getVehicleImageUrl());
+        }
+        
+        dto.setServiceMode(booking.getServiceMode());
+        dto.setRequiresPickup(booking.getRequiresPickup());
+        dto.setHasSocietyPermission(booking.getHasSocietyPermission());
+        dto.setHasWaterAvailability(booking.getHasWaterAvailability());
+        dto.setServiceRequirements(booking.getServiceRequirements());
+        dto.setVerificationOtp(booking.getVerificationOtp());
+        dto.setIsVerified(booking.getIsVerified());
+        
+        return dto;
     }
 }

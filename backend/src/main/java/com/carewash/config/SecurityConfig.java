@@ -28,6 +28,9 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthFilter jwtAuthFilter;
 
+    @Autowired
+    private com.carewash.security.RateLimitingFilter rateLimitingFilter;
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -46,24 +49,42 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @org.springframework.beans.factory.annotation.Value("${app.cors.allowed-origins}")
+    private String corsAllowedOrigins;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://127.0.0.1:5173"));
+                    config.setAllowedOrigins(Arrays.asList(corsAllowedOrigins.split(",")));
                     config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(Arrays.asList("*"));
                     return config;
-                })).csrf(csrf -> csrf.disable())
+                }))
+                .csrf(csrf -> csrf.disable())
+                .headers(headers -> headers
+                        .xssProtection(xss -> xss.disable())
+                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; frame-ancestors 'none';"))
+                        .frameOptions(frame -> frame.deny())
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> 
                     auth.requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/services").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/seed/**").permitAll()
+                        .requestMatchers("/api/health").permitAll()
+                        .requestMatchers("/api/webhooks/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/operations/**").hasAnyRole("OPERATIONS_MANAGER", "SUPER_ADMIN")
+                        .requestMatchers("/api/finance/**").hasAnyRole("FINANCE_MANAGER", "SUPER_ADMIN")
+                        .requestMatchers("/api/support/**").hasAnyRole("SUPPORT_AGENT", "SUPER_ADMIN")
+                        .requestMatchers("/api/provider/**").hasRole("SERVICE_PROVIDER")
+                        .requestMatchers("/api/super-admin/**").hasRole("SUPER_ADMIN")
                         .anyRequest().authenticated()
                 );
 
         http.authenticationProvider(authenticationProvider());
+        http.addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
