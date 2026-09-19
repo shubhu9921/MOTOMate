@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Calendar, Droplets, CheckCircle2, AlertCircle } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const MySubscription = () => {
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMySubscription = async () => {
@@ -48,7 +46,7 @@ const MySubscription = () => {
     );
   }
 
-  const isExpiringSoon = new Date(subscription.endDate).getTime() - new Date().getTime() < 7 * 24 * 60 * 60 * 1000;
+  const isExpiringSoon = new Date(subscription.endDate).getTime() - Date.now() < 7 * 24 * 60 * 60 * 1000;
   const progressPercent = (subscription.usedWashes / subscription.totalWashes) * 100;
 
   return (

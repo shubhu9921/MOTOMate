@@ -17,7 +17,7 @@ const Checkout = () => {
       // Assuming user is authenticated and token is managed by an interceptor
       const token = localStorage.getItem('token');
       await axios.post('http://localhost:8080/api/subscriptions/subscribe', {
-        planId: parseInt(planId),
+        planId: Number.parseInt(planId, 10),
         autoRenew
       }, {
         headers: { Authorization: `Bearer ${token}` }

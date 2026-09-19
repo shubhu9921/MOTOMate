@@ -36,15 +36,28 @@ const DashboardLayout = ({ children, navItems = [], showProfile = false, showPro
             <nav className="flex flex-col py-3">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.path || (location.pathname.startsWith(item.path) && item.path !== defaultPath && item.path !== '/profile');
+                
+                let linkClassName = 'flex items-center justify-between px-6 py-3 text-sm font-medium transition-colors ';
+                linkClassName += showProfile ? 'border-l-4 ' : '';
+                
+                if (isActive) {
+                  if (showProfile) {
+                    linkClassName += 'text-yellow-500 border-yellow-600 bg-blue-50/30';
+                  } else {
+                    linkClassName += 'bg-zinc-900 text-yellow-500 border-r-4 border-yellow-600';
+                  }
+                } else {
+                  linkClassName += 'text-zinc-400 border-transparent hover:bg-zinc-800 hover:text-yellow-400';
+                  if (!showProfile) {
+                    linkClassName += ' hover:bg-zinc-800';
+                  }
+                }
+
                 return (
                   <Link
                     key={item.name}
                     to={item.path}
-                    className={`flex items-center justify-between px-6 py-3 text-sm font-medium transition-colors ${showProfile ? 'border-l-4' : ''} ${
-                      isActive
-                        ? showProfile ? 'text-yellow-500 border-yellow-600 bg-blue-50/30' : 'bg-zinc-900 text-yellow-500 border-r-4 border-yellow-600'
-                        : `text-zinc-400 border-transparent hover:bg-zinc-800 hover:text-yellow-400 ${!showProfile ? 'hover:bg-zinc-800' : ''}`
-                    }`}
+                    className={linkClassName}
                   >
                     <div className="flex items-center gap-3">
                       {item.icon}

@@ -55,8 +55,10 @@ export function TextScramble({
         if (progress * text.length > i) {
           scrambled += text[i];
         } else {
-          scrambled +=
-            characterSet[Math.floor(Math.random() * characterSet.length)];
+          const randomArray = new Uint32Array(1);
+          window.crypto.getRandomValues(randomArray);
+          const randomIndex = randomArray[0] % characterSet.length;
+          scrambled += characterSet[randomIndex];
         }
       }
 

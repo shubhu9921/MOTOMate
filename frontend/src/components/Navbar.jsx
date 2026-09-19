@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, Car, UserCircle, LogOut, ChevronDown, Bell, Calendar } from 'lucide-react';
+import { Menu, X, Car, UserCircle, LogOut, ChevronDown, Bell } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -91,7 +91,7 @@ const Navbar = ({ isTransparent = false }) => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2">
               <Car className={`h-8 w-8 ${isTransparent ? 'text-white' : 'text-teal-400'}`} />
-              <span className="font-bold text-2xl tracking-tight text-white">Motor<span className={isTransparent ? 'text-teal-400' : 'text-teal-400'}>Mate</span></span>
+              <span className="font-bold text-2xl tracking-tight text-white">Motor<span className="text-teal-400">Mate</span></span>
             </Link>
           </div>
           
@@ -214,13 +214,19 @@ const Navbar = ({ isTransparent = false }) => {
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      <MobileMenu isOpen={isOpen} setIsOpen={setIsOpen} isAuthenticated={isAuthenticated} currentUser={currentUser} logout={logout} />
+    </nav>
+  );
+};
+
+const MobileMenu = ({ isOpen, setIsOpen, isAuthenticated, currentUser, logout }) => {
+  return (
+    <>
       <div 
         className={`fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] transition-opacity duration-300 md:hidden ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setIsOpen(false)}
       />
 
-      {/* Mobile Menu Drawer (Left Side) */}
       <div 
         className={`fixed top-0 left-0 h-full w-[85%] max-w-sm bg-zinc-950 z-[70] shadow-2xl transform transition-transform duration-300 ease-in-out md:hidden flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
@@ -291,7 +297,7 @@ const Navbar = ({ isTransparent = false }) => {
            <Link to="/book" onClick={() => setIsOpen(false)} className="block w-full text-center bg-yellow-600 text-zinc-50 px-4 py-4 rounded-xl font-bold shadow-md hover:bg-yellow-500 hover:shadow-lg transition-all">Book Your Wash</Link>
         </div>
       </div>
-    </nav>
+    </>
   );
 };
 
