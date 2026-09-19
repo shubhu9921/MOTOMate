@@ -8,14 +8,15 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "services")
-public class Service {
+@Table(name = "subscription_plans")
+public class SubscriptionPlan {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,25 +28,36 @@ public class Service {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BillingPeriod billingPeriod;
+
     @Column(nullable = false)
     private Double price;
 
+    @Column(nullable = false, columnDefinition = "double default 0.0")
+    private Double discountPercentage = 0.0;
+
     @Column(nullable = false)
-    private Integer durationMinutes;
+    private Integer includedWashes;
+
+    @Column(nullable = false)
+    private Double additionalWashPrice;
+
+    @Column(nullable = false, columnDefinition = "int default 1")
+    private Integer vehicleLimit = 1;
 
     @Column(nullable = false)
     private Boolean active = true;
 
-    private String category;
-    private String serviceType;
-    private String vehicleTypeApplicability;
-    private String imageUrl;
-    
     @Column(columnDefinition = "TEXT")
-    private String features;
-    
-    private Integer displayOrder;
-    private Boolean premiumFlag = false;
+    private String cancellationPolicy;
+
+    @Column(columnDefinition = "TEXT")
+    private String terms;
+
+    @OneToMany(mappedBy = "subscriptionPlan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SubscriptionPlanService> planServices;
 
     @CreationTimestamp
     @Column(updatable = false)

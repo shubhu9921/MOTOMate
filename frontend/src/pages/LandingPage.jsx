@@ -15,7 +15,7 @@ const LandingPage = () => {
   return (
     <div className="bg-zinc-900 flex flex-col font-sans">
       <SEO />
-      <Navbar />
+      <Navbar isTransparent={true} />
       <main className="">
         <Hero />
         <TrustBar />

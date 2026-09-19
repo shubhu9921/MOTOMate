@@ -20,42 +20,22 @@ public class BookingController {
     private BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<BookingDto>> createBooking(@Valid @RequestBody BookingRequest request, Authentication authentication) {
-        BookingDto booking = bookingService.createBooking(authentication.getName(), request);
-        return ResponseEntity.ok(ApiResponse.<BookingDto>builder()
-                .success(true)
-                .message("Booking created successfully")
-                .data(booking)
-                .build());
+    public BookingDto createBooking(@Valid @RequestBody BookingRequest request, Authentication authentication) {
+        return bookingService.createBooking(authentication.getName(), request);
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<BookingDto>>> getUserBookings(Authentication authentication) {
-        List<BookingDto> bookings = bookingService.getUserBookings(authentication.getName());
-        return ResponseEntity.ok(ApiResponse.<List<BookingDto>>builder()
-                .success(true)
-                .message("Bookings fetched successfully")
-                .data(bookings)
-                .build());
+    public List<BookingDto> getUserBookings(Authentication authentication) {
+        return bookingService.getUserBookings(authentication.getName());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<BookingDto>> getBookingById(@PathVariable Long id, Authentication authentication) {
-        BookingDto booking = bookingService.getBookingById(authentication.getName(), id);
-        return ResponseEntity.ok(ApiResponse.<BookingDto>builder()
-                .success(true)
-                .message("Booking fetched successfully")
-                .data(booking)
-                .build());
+    public BookingDto getBookingById(@PathVariable Long id, Authentication authentication) {
+        return bookingService.getBookingById(authentication.getName(), id);
     }
 
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<ApiResponse<BookingDto>> cancelBooking(@PathVariable Long id, Authentication authentication) {
-        BookingDto booking = bookingService.cancelBooking(authentication.getName(), id);
-        return ResponseEntity.ok(ApiResponse.<BookingDto>builder()
-                .success(true)
-                .message("Booking cancelled successfully")
-                .data(booking)
-                .build());
+    public BookingDto cancelBooking(@PathVariable Long id, Authentication authentication) {
+        return bookingService.cancelBooking(authentication.getName(), id);
     }
 }
