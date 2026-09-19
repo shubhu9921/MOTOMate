@@ -17,25 +17,25 @@ export type PresetType = 'blur' | 'fade-in-blur' | 'scale' | 'fade' | 'slide';
 export type PerType = 'word' | 'char' | 'line';
 
 export type TextEffectProps = {
-  children: string;
-  per?: PerType;
-  as?: keyof React.JSX.IntrinsicElements;
-  variants?: {
+  readonly children: string;
+  readonly per?: PerType;
+  readonly as?: keyof React.JSX.IntrinsicElements;
+  readonly variants?: {
     container?: Variants;
     item?: Variants;
   };
-  className?: string;
-  preset?: PresetType;
-  delay?: number;
-  speedReveal?: number;
-  speedSegment?: number;
-  trigger?: boolean;
-  onAnimationComplete?: () => void;
-  onAnimationStart?: () => void;
-  segmentWrapperClassName?: string;
-  containerTransition?: Transition;
-  segmentTransition?: Transition;
-  style?: React.CSSProperties;
+  readonly className?: string;
+  readonly preset?: PresetType;
+  readonly delay?: number;
+  readonly speedReveal?: number;
+  readonly speedSegment?: number;
+  readonly trigger?: boolean;
+  readonly onAnimationComplete?: () => void;
+  readonly onAnimationStart?: () => void;
+  readonly segmentWrapperClassName?: string;
+  readonly containerTransition?: Transition;
+  readonly segmentTransition?: Transition;
+  readonly style?: React.CSSProperties;
 };
 
 const defaultStaggerTimes: Record<PerType, number> = {
@@ -117,12 +117,15 @@ const AnimationComponent: React.FC<{
   per: 'line' | 'word' | 'char';
   segmentWrapperClassName?: string;
 }> = React.memo(({ segment, variants, per, segmentWrapperClassName }) => {
-  const content =
-    per === 'line' ? (
+  let content;
+  if (per === 'line') {
+    content = (
       <motion.span variants={variants} className='block'>
         {segment}
       </motion.span>
-    ) : per === 'word' ? (
+    );
+  } else if (per === 'word') {
+    content = (
       <motion.span
         aria-hidden='true'
         variants={variants}
@@ -130,20 +133,26 @@ const AnimationComponent: React.FC<{
       >
         {segment}
       </motion.span>
-    ) : (
+    );
+  } else {
+    content = (
       <motion.span className='inline-block whitespace-pre'>
-        {segment.split('').map((char, charIndex) => (
-          <motion.span
-            key={`char-${charIndex}`}
-            aria-hidden='true'
-            variants={variants}
-            className='inline-block whitespace-pre'
-          >
-            {char}
-          </motion.span>
-        ))}
+        {segment.split('').map((char, charIndex) => {
+          const uniqueKey = `char-${charIndex}-${char}`;
+          return (
+            <motion.span
+              key={uniqueKey}
+              aria-hidden='true'
+              variants={variants}
+              className='inline-block whitespace-pre'
+            >
+              {char}
+            </motion.span>
+          );
+        })}
       </motion.span>
     );
+  }
 
   if (!segmentWrapperClassName) {
     return content;
