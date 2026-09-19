@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
-const Navbar = () => {
+const Navbar = ({ isTransparent = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -85,23 +85,24 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-zinc-950 shadow-sm sticky top-0 z-50">
+    <nav className={isTransparent ? "absolute top-0 left-0 w-full z-50 bg-transparent pt-4" : "bg-zinc-950 shadow-sm sticky top-0 z-50"}>
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20">
+        <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2">
-              <Car className="h-8 w-8 text-yellow-500" />
-              <span className="font-bold text-2xl tracking-tight text-zinc-50">MOTO<span className="text-yellow-500">MATE</span></span>
+              <Car className={`h-8 w-8 ${isTransparent ? 'text-white' : 'text-teal-400'}`} />
+              <span className="font-bold text-2xl tracking-tight text-white">Motor<span className={isTransparent ? 'text-teal-400' : 'text-teal-400'}>Mate</span></span>
             </Link>
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/services" className="text-zinc-400 hover:text-yellow-400 font-medium transition-colors">Services</Link>
-            <Link to="/how-it-works" className="text-zinc-400 hover:text-yellow-400 font-medium transition-colors">How It Works</Link>
-            <Link to="/pricing" className="text-zinc-400 hover:text-yellow-400 font-medium transition-colors">Pricing</Link>
-            <Link to="/about" className="text-zinc-400 hover:text-yellow-400 font-medium transition-colors">About</Link>
-            <a href="/#reviews" className="text-zinc-400 hover:text-yellow-400 font-medium transition-colors">Reviews</a>
-            <a href="/#faq" className="text-zinc-400 hover:text-yellow-400 font-medium transition-colors">FAQ</a>
+            <Link to="/" className={`font-medium transition-colors text-sm ${isTransparent ? 'text-teal-400' : 'text-zinc-300 hover:text-teal-400'}`}>Home</Link>
+            <Link to="/services" className={`font-medium transition-colors text-sm ${isTransparent ? 'text-white hover:text-teal-400' : 'text-zinc-300 hover:text-teal-400'}`}>Services</Link>
+            <Link to="/pricing" className={`font-medium transition-colors text-sm ${isTransparent ? 'text-white hover:text-teal-400' : 'text-zinc-300 hover:text-teal-400'}`}>Pricing</Link>
+            <Link to="/subscriptions" className={`font-medium transition-colors text-sm ${isTransparent ? 'text-white hover:text-teal-400' : 'text-zinc-300 hover:text-teal-400'}`}>Subscriptions</Link>
+            <Link to="/how-it-works" className={`font-medium transition-colors text-sm ${isTransparent ? 'text-white hover:text-teal-400' : 'text-zinc-300 hover:text-teal-400'}`}>How It Works</Link>
+            <Link to="/about" className={`font-medium transition-colors text-sm ${isTransparent ? 'text-white hover:text-teal-400' : 'text-zinc-300 hover:text-teal-400'}`}>About</Link>
+            <Link to="/contact" className={`font-medium transition-colors text-sm ${isTransparent ? 'text-white hover:text-teal-400' : 'text-zinc-300 hover:text-teal-400'}`}>Contact</Link>
             
             <div className="flex items-center space-x-4 ml-4">
               {isAuthenticated ? (
@@ -169,6 +170,7 @@ const Navbar = () => {
                         {currentUser?.role === 'CUSTOMER' ? (
                           <>
                             <Link to="/dashboard" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">My Dashboard</Link>
+                            <Link to="/subscriptions/my" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">My Subscription</Link>
                             <Link to="/profile" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">My Profile</Link>
                             <Link to="/vehicles" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">My Vehicles</Link>
                             <Link to="/my-bookings" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-yellow-400">My Bookings</Link>
@@ -195,11 +197,11 @@ const Navbar = () => {
                   </div>
                 </>
               ) : (
-                <Link to="/login" className="text-yellow-500 font-medium hover:text-yellow-300 transition-colors">Login</Link>
+                <Link to="/login" className={`font-medium transition-colors text-sm ${isTransparent ? 'text-white hover:text-teal-400' : 'text-teal-400 hover:text-teal-300'}`}>Login</Link>
               )}
               
-              <Link to="/book" className="bg-yellow-600 text-zinc-50 px-5 py-2.5 rounded-md font-medium hover:bg-yellow-500 transition-colors shadow-sm flex items-center gap-2">
-                <Calendar className="w-4 h-4" /> Book Now
+              <Link to="/book" className={isTransparent ? "bg-white text-black px-6 py-2.5 rounded-full font-bold hover:bg-zinc-200 transition-colors shadow-sm text-sm ml-4" : "bg-teal-500 text-zinc-950 px-6 py-2.5 rounded-full font-bold hover:bg-teal-400 transition-colors shadow-sm flex items-center gap-2 text-sm ml-4"}>
+                Book a Wash
               </Link>
             </div>
           </div>
@@ -257,6 +259,7 @@ const Navbar = () => {
                   {currentUser?.role === 'CUSTOMER' ? (
                     <>
                       <Link to="/dashboard" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Dashboard</Link>
+                      <Link to="/subscriptions/my" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">My Subscription</Link>
                       <Link to="/" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Home</Link>
                       <Link to="/services" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Services</Link>
                       <Link to="/pricing" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-base font-medium text-zinc-300 hover:text-yellow-400 hover:bg-zinc-800 rounded-lg transition-colors">Pricing</Link>

@@ -49,6 +49,9 @@ public class BookingService {
     @Autowired
     private AssignmentService assignmentService;
 
+    @Autowired
+    private SubscriptionUsageService subscriptionUsageService;
+
     @Transactional
     public BookingDto createBooking(String email, BookingRequest request) {
         User user = userRepository.findByEmail(email)
@@ -75,6 +78,17 @@ public class BookingService {
             throw new BadRequestException("Address does not belong to user");
         }
         
+        double totalAmount = service.getPrice();
+        boolean isSubscriptionBooking = subscriptionUsageService.isServiceIncluded(user.getId(), service.getId());
+        if (isSubscriptionBooking) {
+            totalAmount = 0.0;
+        } else {
+            double discount = subscriptionUsageService.getServiceDiscount(user.getId(), service.getId());
+            if (discount > 0) {
+                totalAmount = totalAmount - (totalAmount * discount / 100.0);
+            }
+        }
+        
         Booking booking = Booking.builder()
                 .user(user)
                 .service(service)
@@ -83,7 +97,7 @@ public class BookingService {
                 .bookingDate(request.getBookingDate())
                 .bookingTime(request.getBookingTime())
                 .status(BookingStatus.PENDING)
-                .totalAmount(service.getPrice())
+                .totalAmount(totalAmount)
                 .notes(request.getNotes())
                 .serviceMode(request.getServiceMode() != null ? request.getServiceMode() : "STATION")
                 .requiresPickup(request.getRequiresPickup() != null ? request.getRequiresPickup() : false)
@@ -189,9 +203,18 @@ public class BookingService {
 
         booking.setStatus(newStatus);
         
-        if (newStatus == BookingStatus.COMPLETED && booking.getPayment() != null && booking.getPayment().getMethod() == PaymentMethod.CASH) {
-            booking.getPayment().setStatus(PaymentStatus.PAID);
-            paymentRepository.save(booking.getPayment());
+        if (newStatus == BookingStatus.COMPLETED) {
+            if (booking.getTotalAmount() == 0.0) {
+                try {
+                    subscriptionUsageService.consumeWash(booking.getUser().getId(), booking, booking.getService(), booking.getVehicle());
+                } catch (Exception e) {
+                    System.err.println("Failed to consume wash: " + e.getMessage());
+                }
+            }
+            if (booking.getPayment() != null && booking.getPayment().getMethod() == PaymentMethod.CASH) {
+                booking.getPayment().setStatus(PaymentStatus.PAID);
+                paymentRepository.save(booking.getPayment());
+            }
         }
 
         Booking savedBooking = bookingRepository.save(booking);

@@ -10,10 +10,14 @@ const BookingFlow = () => {
   const [services, setServices] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [addresses, setAddresses] = useState([]);
+  const [mySubscription, setMySubscription] = useState(null);
   
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  
+  const [activeSubscription, setActiveSubscription] = useState(null);
+  const [loadingSubscription, setLoadingSubscription] = useState(false);
   
   const { currentUser } = useAuth();
   const navigate = useNavigate();
@@ -61,10 +65,16 @@ const BookingFlow = () => {
         api.get('/addresses')
       ]);
 
+      // Try fetching subscription if user is logged in
+      try {
       const activeServices = servicesRes.data.data.filter(s => s.active);
       setServices(activeServices);
       setVehicles(vehiclesRes.data.data);
       setAddresses(addressesRes.data.data);
+      
+      if (subRes && subRes.data) {
+        setActiveSubscription(subRes.data);
+      }
 
       const searchParams = new URLSearchParams(location.search);
       const serviceIdParam = searchParams.get('serviceId') || location.state?.serviceId;
@@ -256,17 +266,35 @@ const BookingFlow = () => {
     );
   }
 
+  const getSubscriptionDiscount = () => {
+    if (!selectedService || !activeSubscription || activeSubscription.remainingWashes <= 0) return 0;
+    
+    const planService = activeSubscription.planServices?.find(ps => ps.serviceId === selectedService.id);
+    if (!planService) return 0;
+
+    if (planService.isIncluded) {
+      return selectedService.price; // 100% discount
+    } else if (planService.discountPercentage > 0) {
+      return selectedService.price * (planService.discountPercentage / 100);
+    }
+    return 0;
+  };
+
   const getFinalPrice = () => {
     if (!selectedService) return 0;
     let price = selectedService.price;
-    if (appliedCoupon) {
+    
+    const subDiscount = getSubscriptionDiscount();
+    price = price - subDiscount;
+    
+    if (appliedCoupon && price > 0) {
       if (appliedCoupon.discountType === 'PERCENTAGE') {
         price = price - (price * appliedCoupon.discount / 100);
       } else {
         price = price - appliedCoupon.discount;
       }
     }
-    return price.toFixed(2);
+    return Math.max(0, price).toFixed(2);
   };
 
   return (
@@ -329,7 +357,14 @@ const BookingFlow = () => {
                             <p className="text-zinc-400 text-sm leading-relaxed">{s.description}</p>
                           </div>
                           <div className="text-right pl-4">
-                            <p className="font-extrabold text-xl text-zinc-50">₹{s.price}</p>
+                            {activeSubscription && activeSubscription.remainingWashes > 0 && activeSubscription.planServices?.find(ps => ps.serviceId === s.id && ps.isIncluded) ? (
+                                <>
+                                  <p className="font-extrabold text-xl text-emerald-400">FREE</p>
+                                  <p className="text-xs text-emerald-500/70 line-through">₹{s.price}</p>
+                                </>
+                            ) : (
+                                <p className="font-extrabold text-xl text-zinc-50">₹{s.price}</p>
+                            )}
                             <p className="text-xs font-medium text-zinc-500 mt-1">{s.durationMinutes} mins</p>
                           </div>
                         </div>
@@ -603,6 +638,16 @@ const BookingFlow = () => {
               {step === 5 && (
                 <div className="animate-fade-in-up">
                   <h2 className="text-2xl font-bold mb-6 text-zinc-50">Review & Confirm</h2>
+                  
+                  {activeSubscription && activeSubscription.remainingWashes > 0 && getSubscriptionDiscount() > 0 && (
+                    <div className="bg-blue-900/30 border border-blue-800 rounded-2xl p-6 text-blue-100 mb-8">
+                      <h3 className="font-bold flex items-center gap-2 mb-2"><ShieldCheck className="w-5 h-5"/> Subscription Active</h3>
+                      <p className="text-sm opacity-90 leading-relaxed">
+                        You are using 1 wash from your <strong>{activeSubscription.planName}</strong> plan. Remaining washes after this: {activeSubscription.remainingWashes - 1}
+                      </p>
+                    </div>
+                  )}
+
                   <div className="bg-zinc-900 border border-blue-100 rounded-2xl p-6 text-blue-800 mb-8">
                     <h3 className="font-bold flex items-center gap-2 mb-2"><ShieldCheck className="w-5 h-5"/> Payment Terms</h3>
                     <p className="text-sm opacity-90 leading-relaxed">
@@ -619,16 +664,18 @@ const BookingFlow = () => {
                           placeholder="Enter Code" 
                           value={couponCode} 
                           onChange={e => setCouponCode(e.target.value.toUpperCase())} 
-                          className="border-2 border-zinc-800 rounded-xl px-4 py-3 flex-grow font-bold text-zinc-50 uppercase focus:border-blue-600 focus:ring-0 transition-colors" 
+                          className="border-2 border-zinc-800 rounded-xl px-4 py-3 flex-grow font-bold text-zinc-50 uppercase focus:border-blue-600 focus:ring-0 transition-colors disabled:opacity-50" 
+                          disabled={getFinalPrice() === '0.00'}
                         />
                         <button 
                           onClick={applyCoupon} 
-                          disabled={validatingCoupon} 
+                          disabled={validatingCoupon || getFinalPrice() === '0.00'} 
                           className="bg-black text-zinc-50 px-6 py-3 rounded-xl font-bold hover:bg-slate-800 disabled:opacity-50 transition-colors"
                         >
                           Apply
                         </button>
                       </div>
+                      {getFinalPrice() === '0.00' && <p className="text-emerald-400 text-sm mt-2 font-medium">Service is free, coupon not needed.</p>}
                       {couponError && <p className="text-red-500 text-sm mt-2 font-medium">{couponError}</p>}
                     </div>
                   ) : (
@@ -773,17 +820,33 @@ const BookingFlow = () => {
                   <span className="text-zinc-500 font-medium">Subtotal</span>
                   <span className="font-bold">₹{selectedService ? selectedService.price : '0.00'}</span>
                 </div>
+                {activeSubscription && activeSubscription.remainingWashes > 0 && getSubscriptionDiscount() > 0 && (
+                  <div className="flex justify-between items-center mb-4 text-blue-400">
+                    <span className="font-medium text-sm">Subscription Discount</span>
+                    <span className="font-bold">
+                      -₹{getSubscriptionDiscount().toFixed(2)}
+                    </span>
+                  </div>
+                )}
                 {appliedCoupon && (
                   <div className="flex justify-between items-center mb-4 text-green-400">
-                    <span className="font-medium text-sm">Discount</span>
+                    <span className="font-medium text-sm">Coupon Discount</span>
                     <span className="font-bold">
                       -₹{appliedCoupon.discountType === 'PERCENTAGE' ? (selectedService.price * appliedCoupon.discount / 100).toFixed(2) : appliedCoupon.discount}
                     </span>
                   </div>
                 )}
+                {getFinalPrice().discount > 0 && !getFinalPrice().subscriptionApplied && !appliedCoupon && (
+                    <div className="flex justify-between items-center mb-4 text-green-400">
+                      <span className="font-medium text-sm">Total Discount</span>
+                      <span className="font-bold">
+                        -₹{getFinalPrice().discount}
+                      </span>
+                    </div>
+                )}
                 <div className="flex justify-between items-center pt-4 border-t border-slate-700 mt-2">
                   <span className="font-bold uppercase tracking-wider text-sm text-slate-300">Total</span>
-                  <span className="font-extrabold text-2xl text-zinc-50">₹{getFinalPrice()}</span>
+                  <span className="font-extrabold text-2xl text-zinc-50">₹{getFinalPrice().final}</span>
                 </div>
               </div>
 

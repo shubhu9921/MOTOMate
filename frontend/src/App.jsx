@@ -9,15 +9,14 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import AccessDenied from './pages/auth/AccessDenied';
+import MotionShowcase from './pages/MotionShowcase';
 
 // Layouts
-import CustomerLayout from './components/CustomerLayout';
-import AdminLayout from './components/AdminLayout';
-import ProviderLayout from './components/ProviderLayout';
-import SuperAdminLayout from './components/SuperAdminLayout';
-import OperationsLayout from './components/OperationsLayout';
-import SupportLayout from './components/SupportLayout';
-import FinanceLayout from './components/FinanceLayout';
+import DashboardLayout from './components/DashboardLayout';
+import { 
+  customerNav, adminNav, superAdminNav, operationsNav, 
+  financeNav, providerNav, supportNav 
+} from './config/navigation';
 import { ROLES } from './utils/permissions';
 
 import Dashboard from './pages/customer/Dashboard';
@@ -43,6 +42,14 @@ import HowItWorksPage from './pages/HowItWorksPage';
 import AboutPage from './pages/AboutPage';
 import Contact from './pages/Contact';
 
+// Subscriptions
+import PlansList from './pages/subscriptions/PlansList';
+import Checkout from './pages/subscriptions/Checkout';
+import Success from './pages/subscriptions/Success';
+import MySubscription from './pages/subscriptions/MySubscription';
+import UsageHistory from './pages/subscriptions/UsageHistory';
+import PlansManager from './pages/admin/subscriptions/PlansManager';
+
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminBookings from './pages/admin/AdminBookings';
 import AdminCustomers from './pages/admin/AdminCustomers';
@@ -66,14 +73,16 @@ function App() {
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/services/:id" element={<ServiceDetails />} />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/subscriptions" element={<PlansList />} />
           <Route path="/how-it-works" element={<HowItWorksPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/motion" element={<MotionShowcase />} />
           
           {/* RBAC Protected Routes */}
           
           {/* Admin Routes */}
-          <Route path="/admin/*" element={<ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPER_ADMIN]}><AdminLayout>
+          <Route path="/admin/*" element={<ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPER_ADMIN]}><DashboardLayout navItems={adminNav} defaultPath="/admin/dashboard">
             <Routes>
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="bookings" element={<AdminBookings />} />
@@ -81,50 +90,51 @@ function App() {
               <Route path="providers" element={<AdminProviders />} />
               <Route path="technicians" element={<AdminTechnicians />} />
               <Route path="services" element={<AdminServices />} />
+              <Route path="subscriptions" element={<PlansManager />} />
               {/* Fallback to dashboard */}
               <Route path="*" element={<AdminDashboard />} />
             </Routes>
-          </AdminLayout></ProtectedRoute>} />
+          </DashboardLayout></ProtectedRoute>} />
 
           {/* Super Admin Routes */}
-          <Route path="/super-admin/*" element={<ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]}><SuperAdminLayout>
+          <Route path="/super-admin/*" element={<ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]}><DashboardLayout navItems={superAdminNav} defaultPath="/super-admin/dashboard">
             <Routes>
               <Route path="dashboard" element={<SuperAdminDashboard />} />
               <Route path="*" element={<SuperAdminDashboard />} />
             </Routes>
-          </SuperAdminLayout></ProtectedRoute>} />
+          </DashboardLayout></ProtectedRoute>} />
           
           {/* Operations Routes */}
-          <Route path="/operations/*" element={<ProtectedRoute allowedRoles={[ROLES.OPERATIONS_MANAGER, ROLES.SUPER_ADMIN]}><OperationsLayout>
+          <Route path="/operations/*" element={<ProtectedRoute allowedRoles={[ROLES.OPERATIONS_MANAGER, ROLES.SUPER_ADMIN]}><DashboardLayout navItems={operationsNav} defaultPath="/operations/dashboard">
             <Routes>
               <Route path="dashboard" element={<OperationsDashboard />} />
               <Route path="*" element={<OperationsDashboard />} />
             </Routes>
-          </OperationsLayout></ProtectedRoute>} />
+          </DashboardLayout></ProtectedRoute>} />
 
           {/* Support Routes */}
-          <Route path="/support-staff/*" element={<ProtectedRoute allowedRoles={[ROLES.SUPPORT_AGENT, ROLES.SUPER_ADMIN]}><SupportLayout>
+          <Route path="/support-staff/*" element={<ProtectedRoute allowedRoles={[ROLES.SUPPORT_AGENT, ROLES.SUPER_ADMIN]}><DashboardLayout navItems={supportNav} defaultPath="/support/dashboard">
             <Routes>
               <Route path="dashboard" element={<SupportDashboard />} />
               <Route path="*" element={<SupportDashboard />} />
             </Routes>
-          </SupportLayout></ProtectedRoute>} />
+          </DashboardLayout></ProtectedRoute>} />
 
           {/* Finance Routes */}
-          <Route path="/finance/*" element={<ProtectedRoute allowedRoles={[ROLES.FINANCE_MANAGER, ROLES.SUPER_ADMIN]}><FinanceLayout>
+          <Route path="/finance/*" element={<ProtectedRoute allowedRoles={[ROLES.FINANCE_MANAGER, ROLES.SUPER_ADMIN]}><DashboardLayout navItems={financeNav} defaultPath="/finance/dashboard">
             <Routes>
               <Route path="dashboard" element={<FinanceDashboard />} />
               <Route path="*" element={<FinanceDashboard />} />
             </Routes>
-          </FinanceLayout></ProtectedRoute>} />
+          </DashboardLayout></ProtectedRoute>} />
           
           {/* Provider Routes */}
-          <Route path="/provider/*" element={<ProtectedRoute allowedRoles={[ROLES.SERVICE_PROVIDER]}><ProviderLayout>
+          <Route path="/provider/*" element={<ProtectedRoute allowedRoles={[ROLES.SERVICE_PROVIDER]}><DashboardLayout navItems={providerNav} defaultPath="/provider/dashboard">
             <Routes>
               <Route path="dashboard" element={<ProviderDashboard />} />
               <Route path="*" element={<ProviderDashboard />} />
             </Routes>
-          </ProviderLayout></ProtectedRoute>} />
+          </DashboardLayout></ProtectedRoute>} />
           
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -132,7 +142,7 @@ function App() {
           <Route path="/unauthorized" element={<AccessDenied />} />
           
           {/* Customer Routes */}
-          <Route path="/*" element={<ProtectedRoute allowedRoles={[ROLES.CUSTOMER, ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.OPERATIONS_MANAGER, ROLES.SUPPORT_AGENT, ROLES.FINANCE_MANAGER]}><CustomerLayout>
+          <Route path="/*" element={<ProtectedRoute allowedRoles={[ROLES.CUSTOMER, ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.OPERATIONS_MANAGER, ROLES.SUPPORT_AGENT, ROLES.FINANCE_MANAGER]}><DashboardLayout navItems={customerNav} showProfile={true} showPromo={true} defaultPath="/dashboard">
             <Routes>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="profile" element={<Profile />} />
@@ -150,8 +160,13 @@ function App() {
               <Route path="booking-success/:id" element={<BookingSuccess />} />
               <Route path="my-bookings" element={<MyBookings />} />
               <Route path="my-bookings/:id" element={<BookingDetails />} />
+              
+              <Route path="subscriptions/checkout/:planId" element={<Checkout />} />
+              <Route path="subscriptions/success" element={<Success />} />
+              <Route path="subscriptions/my" element={<MySubscription />} />
+              <Route path="subscriptions/my/usage" element={<UsageHistory />} />
             </Routes>
-          </CustomerLayout></ProtectedRoute>} />
+          </DashboardLayout></ProtectedRoute>} />
         </Routes>
       </Router>
     </AuthProvider>
