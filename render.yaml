@@ -3,6 +3,7 @@ services:
     name: motormate-backend
     env: docker
     rootDir: backend
+    plan: free
     envVars:
       - key: DB_HOST
         sync: false
