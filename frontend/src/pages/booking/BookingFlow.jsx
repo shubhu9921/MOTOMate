@@ -67,14 +67,18 @@ const BookingFlow = () => {
 
       // Try fetching subscription if user is logged in
       try {
+        const subRes = await api.get('/customer/subscriptions/active');
+        if (subRes && subRes.data) {
+          setActiveSubscription(subRes.data);
+        }
+      } catch (err) {
+        console.log('No active subscription found');
+      }
+
       const activeServices = servicesRes.data.data.filter(s => s.active);
       setServices(activeServices);
       setVehicles(vehiclesRes.data.data);
       setAddresses(addressesRes.data.data);
-      
-      if (subRes && subRes.data) {
-        setActiveSubscription(subRes.data);
-      }
 
       const searchParams = new URLSearchParams(location.search);
       const serviceIdParam = searchParams.get('serviceId') || location.state?.serviceId;
