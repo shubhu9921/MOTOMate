@@ -90,7 +90,7 @@ public class SubscriptionUsageService {
         dto.setSubscriptionId(usage.getSubscription().getId());
         dto.setBookingId(usage.getBooking().getId());
         dto.setServiceName(usage.getService().getName());
-        dto.setVehicleInfo(usage.getVehicle().getMake() + " " + usage.getVehicle().getModel());
+        dto.setVehicleInfo(usage.getVehicle().getBrand() + " " + usage.getVehicle().getModel());
         dto.setWashConsumed(usage.getWashConsumed());
         dto.setDate(usage.getDate());
         return dto;

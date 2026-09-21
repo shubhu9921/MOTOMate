@@ -132,7 +132,7 @@ public class SubscriptionService {
                 .totalWashes(plan.getIncludedWashes())
                 .usedWashes(0)
                 .amountPaid(plan.getPrice())
-                .paymentStatus(PaymentStatus.COMPLETED)
+                .paymentStatus(PaymentStatus.PAID)
                 .build();
 
         subscription = customerSubscriptionRepository.save(subscription);
@@ -142,7 +142,7 @@ public class SubscriptionService {
                 .amount(plan.getPrice())
                 .paymentDate(LocalDateTime.now())
                 .paymentMethod(PaymentMethod.ONLINE)
-                .paymentStatus(PaymentStatus.COMPLETED)
+                .paymentStatus(PaymentStatus.PAID)
                 .transactionId("mock_txn_" + System.currentTimeMillis())
                 .build();
         paymentRepository.save(payment);
