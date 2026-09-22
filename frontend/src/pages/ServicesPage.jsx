@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, CheckCircle, Star } from 'lucide-react';
-import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ServiceCard from '../components/ServiceCard';
 import api from '../services/api';
@@ -28,7 +27,6 @@ const ServicesPage = () => {
 
   return (
     <div className="bg-zinc-900 flex flex-col font-sans">
-      <Navbar />
       
       {/* Header */}
       <div className="bg-black text-zinc-50 py-10 relative overflow-hidden">

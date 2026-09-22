@@ -1,5 +1,4 @@
 import React from 'react';
-import Navbar from '../components/Navbar';
 import Hero from '../sections/Hero';
 import HowItWorks from '../sections/HowItWorks';
 import Services from '../sections/Services';
@@ -15,7 +14,6 @@ const LandingPage = () => {
   return (
     <div className="bg-zinc-900 flex flex-col font-sans">
       <SEO />
-      <Navbar isTransparent={true} />
       <main className="">
         <Hero />
         <TrustBar />

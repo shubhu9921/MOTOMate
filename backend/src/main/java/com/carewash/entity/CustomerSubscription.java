@@ -30,11 +30,18 @@ public class CustomerSubscription {
     @JoinColumn(name = "plan_id", nullable = false)
     private SubscriptionPlan plan;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vehicle_id", nullable = false)
+    private Vehicle vehicle;
+
     @Column(nullable = false)
     private LocalDate startDate;
 
     @Column(nullable = false)
     private LocalDate endDate;
+
+    @Column(nullable = false)
+    private LocalDate nextBillingDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -48,14 +55,14 @@ public class CustomerSubscription {
     private Boolean autoRenew = false;
 
     @Column(nullable = false)
-    private Integer totalWashes;
+    private Integer washesAllowed;
 
     @Column(nullable = false, columnDefinition = "int default 0")
-    private Integer usedWashes = 0;
+    private Integer washesUsed = 0;
 
     @Transient
     public Integer getRemainingWashes() {
-        return totalWashes - usedWashes;
+        return washesAllowed - washesUsed;
     }
 
     @Column(nullable = false)
@@ -64,6 +71,12 @@ public class CustomerSubscription {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentStatus paymentStatus;
+
+    @Column(name = "payment_provider")
+    private String paymentProvider;
+
+    @Column(name = "external_subscription_id")
+    private String externalSubscriptionId;
 
     @CreationTimestamp
     @Column(updatable = false)

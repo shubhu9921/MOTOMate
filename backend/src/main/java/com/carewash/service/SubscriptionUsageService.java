@@ -5,7 +5,9 @@ import com.carewash.entity.*;
 import com.carewash.exception.ResourceNotFoundException;
 import com.carewash.repository.CustomerSubscriptionRepository;
 import com.carewash.repository.SubscriptionUsageRepository;
+import com.carewash.event.SubscriptionNotificationEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,11 +17,19 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class SubscriptionUsageService {
 
     private final CustomerSubscriptionRepository customerSubscriptionRepository;
     private final SubscriptionUsageRepository usageRepository;
+    private final ApplicationEventPublisher eventPublisher;
+
+    public SubscriptionUsageService(CustomerSubscriptionRepository customerSubscriptionRepository, 
+                                    SubscriptionUsageRepository usageRepository,
+                                    ApplicationEventPublisher eventPublisher) {
+        this.customerSubscriptionRepository = customerSubscriptionRepository;
+        this.usageRepository = usageRepository;
+        this.eventPublisher = eventPublisher;
+    }
 
     public List<SubscriptionUsageDto> getUsageHistory(Long userId) {
         return usageRepository.findBySubscriptionUserIdOrderByDateDesc(userId).stream()
@@ -59,6 +69,14 @@ public class SubscriptionUsageService {
                 .findFirstByUserIdAndStatusOrderByIdDesc(userId, SubscriptionStatus.ACTIVE)
                 .orElseThrow(() -> new IllegalStateException("No active subscription"));
 
+        if (!sub.getVehicle().getId().equals(vehicle.getId())) {
+            throw new IllegalStateException("Subscription is not associated with this vehicle");
+        }
+
+        if (sub.getEndDate().isBefore(java.time.LocalDate.now())) {
+            throw new IllegalStateException("Subscription has expired");
+        }
+
         if (sub.getRemainingWashes() <= 0) {
             throw new IllegalStateException("Insufficient wash quota");
         }
@@ -70,18 +88,40 @@ public class SubscriptionUsageService {
             throw new IllegalStateException("Service not included in subscription plan");
         }
 
-        sub.setUsedWashes(sub.getUsedWashes() + 1);
+        sub.setWashesUsed(sub.getWashesUsed() + 1);
         customerSubscriptionRepository.save(sub);
+
+        if (sub.getRemainingWashes() <= 1) { // 1 or 0
+            eventPublisher.publishEvent(new SubscriptionNotificationEvent(this, sub, NotificationType.WASHES_LOW));
+        }
 
         SubscriptionUsage usage = SubscriptionUsage.builder()
                 .subscription(sub)
                 .booking(booking)
                 .service(service)
                 .vehicle(vehicle)
+                .usageType(UsageType.WASH)
+                .usageStatus(UsageStatus.CONSUMED)
                 .washConsumed(1)
                 .date(LocalDateTime.now())
                 .build();
         usageRepository.save(usage);
+    }
+
+    @Transactional
+    public void reverseWash(Long bookingId) {
+        Optional<SubscriptionUsage> optUsage = usageRepository.findByBookingId(bookingId);
+        if (optUsage.isPresent()) {
+            SubscriptionUsage usage = optUsage.get();
+            if (usage.getUsageStatus() == UsageStatus.CONSUMED) {
+                usage.setUsageStatus(UsageStatus.REVERSED);
+                usageRepository.save(usage);
+
+                CustomerSubscription sub = usage.getSubscription();
+                sub.setWashesUsed(sub.getWashesUsed() - usage.getWashConsumed());
+                customerSubscriptionRepository.save(sub);
+            }
+        }
     }
 
     private SubscriptionUsageDto mapToDto(SubscriptionUsage usage) {

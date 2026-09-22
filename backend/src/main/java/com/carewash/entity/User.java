@@ -28,10 +28,18 @@ public class User {
     @Column(nullable = false)
     private String name;
 
+    public String getName() {
+        return name;
+    }
+
     @Column(nullable = false, unique = true)
     private String email;
 
     private String phone;
+
+    public String getPhone() {
+        return phone;
+    }
 
     @Column(nullable = false)
     private String password;
@@ -47,4 +55,7 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    public Role getRole() {
+        return role;
+    }
 }

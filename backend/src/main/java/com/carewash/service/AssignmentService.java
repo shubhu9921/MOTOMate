@@ -4,6 +4,7 @@ import com.carewash.entity.*;
 import com.carewash.repository.BookingRepository;
 import com.carewash.repository.ServiceProviderRepository;
 import com.carewash.repository.TechnicianAssignmentRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,9 @@ public class AssignmentService {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void assignTechnicianToBooking(Booking booking) {
@@ -67,13 +71,12 @@ public class AssignmentService {
         ServiceProvider selectedProvider = bestCandidate.provider;
         double distanceKm = bestCandidate.distanceKm;
 
-        TechnicianAssignment assignment = TechnicianAssignment.builder()
-                .booking(booking)
-                .serviceProvider(selectedProvider)
-                .status(AssignmentStatus.PENDING)
-                .distanceKm(distanceKm)
-                .isMandatory(distanceKm <= MANDATORY_RADIUS_KM)
-                .build();
+        TechnicianAssignment assignment = new TechnicianAssignment();
+        assignment.setBooking(booking);
+        assignment.setServiceProvider(selectedProvider);
+        assignment.setStatus(AssignmentStatus.PENDING);
+        assignment.setDistanceKm(distanceKm);
+        assignment.setIsMandatory(distanceKm <= MANDATORY_RADIUS_KM);
 
         assignmentRepository.save(assignment);
 
@@ -85,6 +88,8 @@ public class AssignmentService {
         notificationService.createNotification(selectedProvider.getUser(), "New Job Assigned",
                 "You have been auto-assigned to booking #" + booking.getId() + ". Distance: " + String.format("%.1f", distanceKm) + " km.",
                 NotificationType.PROVIDER_ASSIGNED);
+                
+        eventPublisher.publishEvent(new com.carewash.event.BookingNotificationEvent(this, booking, NotificationType.PROVIDER_ASSIGNED));
     }
 
     private boolean supportsServiceMode(ServiceProvider p, String serviceMode) {

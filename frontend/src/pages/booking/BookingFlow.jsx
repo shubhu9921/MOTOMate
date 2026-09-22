@@ -235,7 +235,8 @@ const BookingFlow = () => {
         requiresPickup,
         hasSocietyPermission,
         hasWaterAvailability,
-        serviceRequirements
+        serviceRequirements,
+        useSubscription: getSubscriptionDiscount() > 0
       };
       
       const response = await api.post('/bookings', payload);
@@ -285,20 +286,31 @@ const BookingFlow = () => {
   };
 
   const getFinalPrice = () => {
-    if (!selectedService) return 0;
+    if (!selectedService) return { final: '0.00', discount: 0, subscriptionApplied: false };
     let price = selectedService.price;
+    let totalDiscount = 0;
     
     const subDiscount = getSubscriptionDiscount();
-    price = price - subDiscount;
+    if (subDiscount > 0) {
+      price = price - subDiscount;
+      totalDiscount += subDiscount;
+    }
     
     if (appliedCoupon && price > 0) {
       if (appliedCoupon.discountType === 'PERCENTAGE') {
-        price = price - (price * appliedCoupon.discount / 100);
+        const couponDisc = (price * appliedCoupon.discount / 100);
+        price -= couponDisc;
+        totalDiscount += couponDisc;
       } else {
-        price = price - appliedCoupon.discount;
+        price -= appliedCoupon.discount;
+        totalDiscount += appliedCoupon.discount;
       }
     }
-    return Math.max(0, price).toFixed(2);
+    return {
+      final: Math.max(0, price).toFixed(2),
+      discount: totalDiscount.toFixed(2),
+      subscriptionApplied: subDiscount > 0
+    };
   };
 
   return (
@@ -669,17 +681,17 @@ const BookingFlow = () => {
                           value={couponCode} 
                           onChange={e => setCouponCode(e.target.value.toUpperCase())} 
                           className="border-2 border-zinc-800 rounded-xl px-4 py-3 flex-grow font-bold text-zinc-50 uppercase focus:border-blue-600 focus:ring-0 transition-colors disabled:opacity-50" 
-                          disabled={getFinalPrice() === '0.00'}
+                          disabled={getFinalPrice().final === '0.00'}
                         />
                         <button 
                           onClick={applyCoupon} 
-                          disabled={validatingCoupon || getFinalPrice() === '0.00'} 
+                          disabled={validatingCoupon || getFinalPrice().final === '0.00'} 
                           className="bg-black text-zinc-50 px-6 py-3 rounded-xl font-bold hover:bg-slate-800 disabled:opacity-50 transition-colors"
                         >
                           Apply
                         </button>
                       </div>
-                      {getFinalPrice() === '0.00' && <p className="text-emerald-400 text-sm mt-2 font-medium">Service is free, coupon not needed.</p>}
+                      {getFinalPrice().final === '0.00' && <p className="text-emerald-400 text-sm mt-2 font-medium">Service is free, coupon not needed.</p>}
                       {couponError && <p className="text-red-500 text-sm mt-2 font-medium">{couponError}</p>}
                     </div>
                   ) : (

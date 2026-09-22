@@ -1,5 +1,4 @@
 import React from 'react';
-import Navbar from './Navbar';
 import Footer from './Footer';
 import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -14,7 +13,6 @@ const DashboardLayout = ({ children, navItems = [], showProfile = false, showPro
 
   return (
     <div className="bg-zinc-900 flex flex-col font-sans min-h-screen">
-      <Navbar />
       <div className="max-w-[1600px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex gap-8 flex-1">
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex flex-col w-64 flex-shrink-0 gap-6">

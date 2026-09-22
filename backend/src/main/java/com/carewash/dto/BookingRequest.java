@@ -32,6 +32,7 @@ public class BookingRequest {
     private Boolean hasSocietyPermission;
     private Boolean hasWaterAvailability;
     private String serviceRequirements;
+    private Boolean useSubscription;
 
     public Long getServiceId() { return serviceId; }
     public void setServiceId(Long serviceId) { this.serviceId = serviceId; }
@@ -72,6 +73,9 @@ public class BookingRequest {
     public String getServiceRequirements() { return serviceRequirements; }
     public void setServiceRequirements(String serviceRequirements) { this.serviceRequirements = serviceRequirements; }
 
+    public Boolean getUseSubscription() { return useSubscription; }
+    public void setUseSubscription(Boolean useSubscription) { this.useSubscription = useSubscription; }
+
     public static BookingRequestBuilder builder() {
         return new BookingRequestBuilder();
     }
@@ -90,6 +94,7 @@ public class BookingRequest {
         private Boolean hasSocietyPermission;
         private Boolean hasWaterAvailability;
         private String serviceRequirements;
+        private Boolean useSubscription;
 
         BookingRequestBuilder() {}
 
@@ -106,6 +111,7 @@ public class BookingRequest {
         public BookingRequestBuilder hasSocietyPermission(Boolean hasSocietyPermission) { this.hasSocietyPermission = hasSocietyPermission; return this; }
         public BookingRequestBuilder hasWaterAvailability(Boolean hasWaterAvailability) { this.hasWaterAvailability = hasWaterAvailability; return this; }
         public BookingRequestBuilder serviceRequirements(String serviceRequirements) { this.serviceRequirements = serviceRequirements; return this; }
+        public BookingRequestBuilder useSubscription(Boolean useSubscription) { this.useSubscription = useSubscription; return this; }
 
         public BookingRequest build() {
             BookingRequest bookingRequest = new BookingRequest();
@@ -122,6 +128,7 @@ public class BookingRequest {
             bookingRequest.setHasSocietyPermission(hasSocietyPermission);
             bookingRequest.setHasWaterAvailability(hasWaterAvailability);
             bookingRequest.setServiceRequirements(serviceRequirements);
+            bookingRequest.setUseSubscription(useSubscription);
             return bookingRequest;
         }
     }

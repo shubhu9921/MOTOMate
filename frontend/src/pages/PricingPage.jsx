@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Check, Info } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import api from '../services/api';
 
@@ -33,7 +32,6 @@ const PricingPage = () => {
 
   return (
     <div className="bg-zinc-900 flex flex-col font-sans">
-      <Navbar />
       <main className=" py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">

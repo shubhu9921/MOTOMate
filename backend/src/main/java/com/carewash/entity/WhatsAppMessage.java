@@ -48,6 +48,34 @@ public class WhatsAppMessage {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Long getConversationId() { return conversationId; }
+    public void setConversationId(Long conversationId) { this.conversationId = conversationId; }
+
+    public String getMessageId() { return messageId; }
+    public void setMessageId(String messageId) { this.messageId = messageId; }
+
+    public WhatsAppMessageDirection getDirection() { return direction; }
+    public void setDirection(WhatsAppMessageDirection direction) { this.direction = direction; }
+
+    public String getMessageType() { return messageType; }
+    public void setMessageType(String messageType) { this.messageType = messageType; }
+
+    public String getMessageText() { return messageText; }
+    public void setMessageText(String messageText) { this.messageText = messageText; }
+
+    public WhatsAppMessageStatus getStatus() { return status; }
+    public void setStatus(WhatsAppMessageStatus status) { this.status = status; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    // Alias for getMessageText to fix AdminWhatsAppService
+    public String getText() { return messageText; }
+    public void setText(String text) { this.messageText = text; }
+
     public static WhatsAppMessageBuilder builder() {
         return new WhatsAppMessageBuilder();
     }

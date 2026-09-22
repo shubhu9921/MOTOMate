@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Clock, CheckCircle, ChevronLeft, Star } from 'lucide-react';
-import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import api from '../services/api';
 
@@ -32,7 +31,6 @@ const ServiceDetails = () => {
 
   return (
     <div className="bg-zinc-900 flex flex-col font-sans">
-      <Navbar />
       
       {/* Header */}
       <div className="bg-black text-zinc-50 py-16 relative overflow-hidden">

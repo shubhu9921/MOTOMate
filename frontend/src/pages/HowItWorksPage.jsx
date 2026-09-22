@@ -1,13 +1,12 @@
 import React from 'react';
-import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HowItWorks from '../sections/HowItWorks';
 import { Link } from 'react-router-dom';
 
 const HowItWorksPage = () => {
   return (
-    <div className="bg-zinc-900 flex flex-col font-sans">
-      <Navbar />
+    <div className="bg-zinc-900 flex flex-col font-sans text-zinc-50">
+      {/* Hero Section */}
       <main className="">
         <HowItWorks />
         <div className="py-16 bg-yellow-600 text-center text-zinc-50">

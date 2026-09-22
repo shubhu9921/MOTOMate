@@ -10,4 +10,5 @@ import java.util.List;
 public interface SubscriptionUsageRepository extends JpaRepository<SubscriptionUsage, Long> {
     List<SubscriptionUsage> findBySubscriptionId(Long subscriptionId);
     List<SubscriptionUsage> findBySubscriptionUserIdOrderByDateDesc(Long userId);
+    java.util.Optional<SubscriptionUsage> findByBookingId(Long bookingId);
 }

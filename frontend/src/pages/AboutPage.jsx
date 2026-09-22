@@ -1,12 +1,10 @@
 import React from 'react';
-import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 
 const AboutPage = () => {
   return (
     <div className="bg-zinc-900 flex flex-col font-sans">
-      <Navbar />
       <main className=" py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         <h1 className="text-4xl md:text-5xl font-extrabold text-zinc-50 mb-8 text-center">About MotoMate</h1>
         

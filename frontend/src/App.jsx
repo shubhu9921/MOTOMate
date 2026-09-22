@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
@@ -10,6 +10,14 @@ import Register from './pages/auth/Register';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import AccessDenied from './pages/auth/AccessDenied';
 import MotionShowcase from './pages/MotionShowcase';
+import Navbar from './components/Navbar';
+
+// Global Navbar wrapper to handle location-based props
+const GlobalNavbar = () => {
+  const location = useLocation();
+  const isTransparent = location.pathname === '/';
+  return <Navbar isTransparent={isTransparent} />;
+};
 
 // Layouts
 import DashboardLayout from './components/DashboardLayout';
@@ -49,6 +57,7 @@ import Success from './pages/subscriptions/Success';
 import MySubscription from './pages/subscriptions/MySubscription';
 import UsageHistory from './pages/subscriptions/UsageHistory';
 import PlansManager from './pages/admin/subscriptions/PlansManager';
+import AdminSubscriptionsList from './pages/admin/subscriptions/AdminSubscriptionsList';
 
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminBookings from './pages/admin/AdminBookings';
@@ -56,6 +65,7 @@ import AdminCustomers from './pages/admin/AdminCustomers';
 import AdminProviders from './pages/admin/AdminProviders';
 import AdminTechnicians from './pages/admin/AdminTechnicians';
 import AdminServices from './pages/admin/AdminServices';
+import WhatsAppDashboard from './pages/admin/WhatsAppDashboard';
 
 import ProviderDashboard from './pages/provider/ProviderDashboard';
 import SuperAdminDashboard from './pages/super-admin/SuperAdminDashboard';
@@ -68,6 +78,7 @@ function App() {
     <AuthProvider>
       <Router>
         <ScrollToTop />
+        <GlobalNavbar />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/services" element={<ServicesPage />} />
@@ -90,7 +101,9 @@ function App() {
               <Route path="providers" element={<AdminProviders />} />
               <Route path="technicians" element={<AdminTechnicians />} />
               <Route path="services" element={<AdminServices />} />
-              <Route path="subscriptions" element={<PlansManager />} />
+              <Route path="subscription-plans" element={<PlansManager />} />
+              <Route path="subscriptions" element={<AdminSubscriptionsList />} />
+              <Route path="whatsapp" element={<WhatsAppDashboard />} />
               {/* Fallback to dashboard */}
               <Route path="*" element={<AdminDashboard />} />
             </Routes>

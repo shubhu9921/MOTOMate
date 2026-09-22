@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
-import Navbar from '../components/Navbar';
+import { Mail, Phone, MapPin, Clock, MessageSquare, Send } from 'lucide-react';
 import Footer from '../components/Footer';
 import api from '../services/api';
 
@@ -24,8 +23,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="bg-zinc-900 flex flex-col font-sans">
-      <Navbar />
+    <div className="bg-zinc-900 flex flex-col font-sans min-h-screen">
       
       <div className="bg-black text-zinc-50 py-10 text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold mb-4">Contact Us</h1>

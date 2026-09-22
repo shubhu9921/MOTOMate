@@ -1,6 +1,7 @@
 package com.carewash.dto;
 
 import com.carewash.entity.BillingPeriod;
+import com.carewash.entity.ServiceFrequency;
 import lombok.Data;
 import java.util.List;
 
@@ -9,9 +10,10 @@ public class SubscriptionPlanRequest {
     private String name;
     private String description;
     private BillingPeriod billingPeriod;
+    private ServiceFrequency serviceFrequency;
     private Double price;
     private Double discountPercentage;
-    private Integer includedWashes;
+    private Integer washLimit;
     private Double additionalWashPrice;
     private Integer vehicleLimit;
     private Boolean active;

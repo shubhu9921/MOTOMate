@@ -1,28 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Droplets, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 
 const MySubscription = () => {
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMySubscription = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8080/api/subscriptions/my', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setSubscription(response.data); // empty if none
-      } catch (error) {
-        console.error('Error fetching subscription', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchMySubscription();
   }, []);
+
+  const fetchMySubscription = async () => {
+    try {
+      const response = await api.get('/subscriptions');
+      if (response.data && response.data.length > 0) {
+        // Find the first active one, or just default to the first one
+        const active = response.data.find(s => s.status === 'ACTIVE') || response.data[0];
+        setSubscription(active);
+      } else {
+        setSubscription(null);
+      }
+    } catch (error) {
+      console.error('Error fetching subscription', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleAutoRenew = async () => {
+    if (!subscription) return;
+    try {
+      await api.patch(`/subscriptions/${subscription.id}/auto-renew`, {
+        autoRenew: !subscription.autoRenew
+      });
+      fetchMySubscription();
+    } catch (error) {
+      console.error('Error toggling auto-renew', error);
+    }
+  };
 
   if (loading) {
     return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">Loading your dashboard...</div>;
@@ -86,14 +102,14 @@ const MySubscription = () => {
                 <p className="text-slate-300 text-sm mt-1 capitalize">{subscription.billingPeriod.toLowerCase()} Billing</p>
               </div>
               <div className="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-xs font-bold uppercase flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" /> ACTIVE
+                <CheckCircle2 className="w-3 h-3" /> {subscription.status}
               </div>
             </div>
 
             <div className="mb-6">
               <div className="flex justify-between text-sm mb-2">
                 <span className="text-slate-300">Wash Quota Usage</span>
-                <span className="font-medium text-white">{subscription.usedWashes} / {subscription.totalWashes} Used</span>
+                <span className="font-medium text-white">{subscription.washesUsed} / {subscription.washesAllowed} Used</span>
               </div>
               <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
                 <div 
@@ -102,7 +118,7 @@ const MySubscription = () => {
                 />
               </div>
               <p className="text-xs text-slate-400 mt-2 text-right">
-                {subscription.remainingWashes} washes remaining
+                {subscription.washesAllowed - subscription.washesUsed} washes remaining
               </p>
             </div>
 
@@ -137,7 +153,10 @@ const MySubscription = () => {
                   {subscription.autoRenew ? 'Enabled' : 'Disabled'}
                 </span>
               </div>
-              <button className="text-xs text-blue-400 hover:text-blue-300 mt-2 underline underline-offset-2">
+              <button 
+                onClick={handleToggleAutoRenew}
+                className="text-xs text-blue-400 hover:text-blue-300 mt-2 underline underline-offset-2"
+              >
                 Change Renewal Settings
               </button>
             </div>

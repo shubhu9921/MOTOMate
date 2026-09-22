@@ -1,26 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 
 const Checkout = () => {
   const { planId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [autoRenew, setAutoRenew] = useState(true);
+  const [vehicles, setVehicles] = useState([]);
+  const [selectedVehicleId, setSelectedVehicleId] = useState('');
 
-  // In a real scenario, we'd fetch the plan details first to show the amount.
-  // For the mock payment, we'll just show a button to complete it.
+  useEffect(() => {
+    const fetchVehicles = async () => {
+      try {
+        const response = await api.get('/vehicles');
+        if (response.data.success && response.data.data.length > 0) {
+          setVehicles(response.data.data);
+          setSelectedVehicleId(response.data.data[0].id);
+        }
+      } catch (error) {
+        console.error('Error fetching vehicles', error);
+      }
+    };
+    fetchVehicles();
+  }, []);
 
   const handlePayment = async () => {
+    if (!selectedVehicleId) {
+      alert('Please select a vehicle first.');
+      return;
+    }
     setLoading(true);
     try {
-      // Assuming user is authenticated and token is managed by an interceptor
-      const token = localStorage.getItem('token');
-      await axios.post('http://localhost:8080/api/subscriptions/subscribe', {
+      await api.post('/subscriptions', {
         planId: Number.parseInt(planId, 10),
+        vehicleId: selectedVehicleId,
         autoRenew
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
       navigate('/subscriptions/success');
     } catch (error) {
@@ -41,6 +56,23 @@ const Checkout = () => {
           <p className="text-xs text-slate-400">
             This is a mock checkout flow. Clicking pay will simulate a successful Razorpay transaction and activate your subscription.
           </p>
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-slate-300 mb-2">Select Vehicle for Subscription</label>
+          {vehicles.length === 0 ? (
+             <div className="text-red-400 text-sm mb-2">You need to add a vehicle first in your profile.</div>
+          ) : (
+            <select 
+              value={selectedVehicleId} 
+              onChange={(e) => setSelectedVehicleId(e.target.value)}
+              className="w-full bg-slate-900 border-slate-700 rounded-lg py-3 px-4 border focus:ring-emerald-500 focus:border-emerald-500 text-white"
+            >
+              {vehicles.map(v => (
+                <option key={v.id} value={v.id}>{v.brand} {v.model} - {v.vehicleNumber}</option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div className="flex items-center gap-3 mb-8">

@@ -35,8 +35,16 @@ public class SubscriptionUsage {
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Integer washConsumed;
+    private UsageType usageType = UsageType.WASH;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UsageStatus usageStatus = UsageStatus.CONSUMED;
+
+    @Column(nullable = false)
+    private Integer washConsumed = 1;
 
     @Column(nullable = false)
     private LocalDateTime date;

@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @Builder
@@ -33,6 +35,12 @@ public class WhatsAppConversation {
     private WhatsAppConversationState currentState = WhatsAppConversationState.NEW;
 
     private LocalDateTime lastMessageAt;
+
+    private Long selectedServiceId;
+    private Long selectedVehicleId;
+    private Long selectedAddressId;
+    private LocalDate selectedDate;
+    private LocalTime selectedTime;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -97,4 +105,19 @@ public class WhatsAppConversation {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public Long getSelectedServiceId() { return selectedServiceId; }
+    public void setSelectedServiceId(Long selectedServiceId) { this.selectedServiceId = selectedServiceId; }
+
+    public Long getSelectedVehicleId() { return selectedVehicleId; }
+    public void setSelectedVehicleId(Long selectedVehicleId) { this.selectedVehicleId = selectedVehicleId; }
+
+    public Long getSelectedAddressId() { return selectedAddressId; }
+    public void setSelectedAddressId(Long selectedAddressId) { this.selectedAddressId = selectedAddressId; }
+
+    public LocalDate getSelectedDate() { return selectedDate; }
+    public void setSelectedDate(LocalDate selectedDate) { this.selectedDate = selectedDate; }
+
+    public LocalTime getSelectedTime() { return selectedTime; }
+    public void setSelectedTime(LocalTime selectedTime) { this.selectedTime = selectedTime; }
 }

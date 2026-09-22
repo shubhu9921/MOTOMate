@@ -2,7 +2,7 @@ import React from 'react';
 import { 
   LayoutDashboard, Users, User, UserCog, Settings2, DollarSign, Calendar, Tag, Gift, HelpCircle, 
   Bell, BarChart, Settings, UserCircle, Shield, CreditCard, ClipboardList, Clock, CalendarDays, UserCheck,
-  Undo2, HandCoins, FileText, Briefcase, Car, History, MapPin, Repeat
+  Undo2, HandCoins, FileText, Briefcase, Car, History, MapPin, Repeat, MessageSquare
 } from 'lucide-react';
 
 export const customerNav = [
@@ -28,12 +28,14 @@ export const adminNav = [
   { name: 'Technicians', path: '/admin/technicians', icon: <UserCog className="w-5 h-5 text-indigo-400" /> },
   { name: 'Services', path: '/admin/services', icon: <Settings2 className="w-5 h-5" /> },
   { name: 'Pricing', path: '/admin/pricing', icon: <DollarSign className="w-5 h-5" /> },
-  { name: 'Subscriptions', path: '/admin/subscriptions', icon: <Repeat className="w-5 h-5" /> },
+  { name: 'Subscription Plans', path: '/admin/subscription-plans', icon: <Tag className="w-5 h-5" /> },
+  { name: 'Customer Subscriptions', path: '/admin/subscriptions', icon: <Repeat className="w-5 h-5" /> },
   { name: 'Bookings', path: '/admin/bookings', icon: <Calendar className="w-5 h-5" /> },
   { name: 'Coupons', path: '/admin/coupons', icon: <Tag className="w-5 h-5" /> },
   { name: 'Offers', path: '/admin/offers', icon: <Gift className="w-5 h-5" /> },
   { name: 'Support', path: '/admin/support', icon: <HelpCircle className="w-5 h-5" /> },
   { name: 'Notifications', path: '/admin/notifications', icon: <Bell className="w-5 h-5" /> },
+  { name: 'WhatsApp', path: '/admin/whatsapp', icon: <MessageSquare className="w-5 h-5" /> },
   { name: 'Reports', path: '/admin/reports', icon: <BarChart className="w-5 h-5" /> },
   { name: 'Settings', path: '/admin/settings', icon: <Settings className="w-5 h-5" /> },
   { name: 'Profile', path: '/admin/profile', icon: <UserCircle className="w-5 h-5" /> },

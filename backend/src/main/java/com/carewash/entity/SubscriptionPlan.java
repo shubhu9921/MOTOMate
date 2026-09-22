@@ -32,6 +32,10 @@ public class SubscriptionPlan {
     @Column(nullable = false)
     private BillingPeriod billingPeriod;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ServiceFrequency serviceFrequency;
+
     @Column(nullable = false)
     private Double price;
 
@@ -39,7 +43,7 @@ public class SubscriptionPlan {
     private Double discountPercentage = 0.0;
 
     @Column(nullable = false)
-    private Integer includedWashes;
+    private Integer washLimit;
 
     @Column(nullable = false)
     private Double additionalWashPrice;

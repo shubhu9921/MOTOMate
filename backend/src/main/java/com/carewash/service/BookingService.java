@@ -6,6 +6,8 @@ import com.carewash.entity.*;
 import com.carewash.exception.BadRequestException;
 import com.carewash.exception.ResourceNotFoundException;
 import com.carewash.repository.*;
+import com.carewash.event.BookingNotificationEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +54,9 @@ public class BookingService {
     @Autowired
     private SubscriptionUsageService subscriptionUsageService;
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
     @Transactional
     public BookingDto createBooking(String email, BookingRequest request) {
         User user = userRepository.findByEmail(email)
@@ -79,7 +84,7 @@ public class BookingService {
         }
         
         double totalAmount = service.getPrice();
-        boolean isSubscriptionBooking = subscriptionUsageService.isServiceIncluded(user.getId(), service.getId());
+        boolean isSubscriptionBooking = Boolean.TRUE.equals(request.getUseSubscription());
         if (isSubscriptionBooking) {
             totalAmount = 0.0;
         } else {
@@ -117,12 +122,16 @@ public class BookingService {
         Payment payment = Payment.builder()
                 .booking(savedBooking)
                 .amount(savedBooking.getTotalAmount())
-                .method(PaymentMethod.CASH)
-                .status(PaymentStatus.PENDING)
+                .method(isSubscriptionBooking ? PaymentMethod.ONLINE : PaymentMethod.CASH)
+                .status(isSubscriptionBooking ? PaymentStatus.PAID : PaymentStatus.PENDING)
                 .build();
         paymentRepository.save(payment);
         
         savedBooking.setPayment(payment);
+
+        if (isSubscriptionBooking) {
+            subscriptionUsageService.consumeWash(user.getId(), savedBooking, service, vehicle);
+        }
 
         // History
         logStatusHistory(savedBooking, null, BookingStatus.PENDING, user, "Booking created");
@@ -130,6 +139,7 @@ public class BookingService {
         // Notification
         notificationService.createNotification(user, "Booking Created", 
             "Your booking for " + service.getName() + " has been received.", NotificationType.BOOKING_CREATED);
+        eventPublisher.publishEvent(new BookingNotificationEvent(this, savedBooking, NotificationType.BOOKING_CREATED));
 
         // Auto-Assign Technician
         assignmentService.assignTechnicianToBooking(savedBooking);
@@ -179,10 +189,15 @@ public class BookingService {
         booking.setStatus(BookingStatus.CANCELLED);
         Booking savedBooking = bookingRepository.save(booking);
 
+        if (booking.getTotalAmount() == 0.0) {
+            subscriptionUsageService.reverseWash(savedBooking.getId());
+        }
+
         logStatusHistory(savedBooking, oldStatus, BookingStatus.CANCELLED, user, "Booking cancelled by user");
 
         notificationService.createNotification(booking.getUser(), "Booking Cancelled", 
             "Your booking #" + booking.getId() + " has been cancelled.", NotificationType.BOOKING_CANCELLED);
+        eventPublisher.publishEvent(new BookingNotificationEvent(this, savedBooking, NotificationType.BOOKING_CANCELLED));
 
         if (savedBooking.getServiceProvider() != null) {
             notificationService.createNotification(savedBooking.getServiceProvider().getUser(), "Job Cancelled", 
@@ -204,13 +219,6 @@ public class BookingService {
         booking.setStatus(newStatus);
         
         if (newStatus == BookingStatus.COMPLETED) {
-            if (booking.getTotalAmount() == 0.0) {
-                try {
-                    subscriptionUsageService.consumeWash(booking.getUser().getId(), booking, booking.getService(), booking.getVehicle());
-                } catch (Exception e) {
-                    System.err.println("Failed to consume wash: " + e.getMessage());
-                }
-            }
             if (booking.getPayment() != null && booking.getPayment().getMethod() == PaymentMethod.CASH) {
                 booking.getPayment().setStatus(PaymentStatus.PAID);
                 paymentRepository.save(booking.getPayment());
@@ -245,6 +253,7 @@ public class BookingService {
             case CONFIRMED:
                 notificationService.createNotification(booking.getUser(), "Booking Confirmed", 
                     "Your booking #" + booking.getId() + " has been confirmed.", NotificationType.BOOKING_CONFIRMED);
+                eventPublisher.publishEvent(new BookingNotificationEvent(this, booking, NotificationType.BOOKING_CONFIRMED));
                 break;
             case ASSIGNED:
                 notificationService.createNotification(booking.getUser(), "Provider Assigned", 
@@ -253,18 +262,22 @@ public class BookingService {
                     notificationService.createNotification(booking.getServiceProvider().getUser(), "New Job Assigned", 
                         "You have been assigned to booking #" + booking.getId(), NotificationType.PROVIDER_ASSIGNED);
                 }
+                eventPublisher.publishEvent(new BookingNotificationEvent(this, booking, NotificationType.PROVIDER_ASSIGNED));
                 break;
             case ON_THE_WAY:
                 notificationService.createNotification(booking.getUser(), "Provider On The Way", 
                     "Your service provider is on the way to your location.", NotificationType.PROVIDER_ON_THE_WAY);
+                eventPublisher.publishEvent(new BookingNotificationEvent(this, booking, NotificationType.PROVIDER_ON_THE_WAY));
                 break;
             case IN_PROGRESS:
                 notificationService.createNotification(booking.getUser(), "Service Started", 
                     "Your car wash service has started.", NotificationType.SERVICE_STARTED);
+                eventPublisher.publishEvent(new BookingNotificationEvent(this, booking, NotificationType.SERVICE_STARTED));
                 break;
             case COMPLETED:
                 notificationService.createNotification(booking.getUser(), "Service Completed", 
                     "Your service is complete. Thank you for using MotoMate!", NotificationType.SERVICE_COMPLETED);
+                eventPublisher.publishEvent(new BookingNotificationEvent(this, booking, NotificationType.SERVICE_COMPLETED));
                 break;
             default:
                 break;

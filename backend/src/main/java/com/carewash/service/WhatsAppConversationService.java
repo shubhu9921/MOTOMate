@@ -4,6 +4,7 @@ import com.carewash.entity.*;
 import com.carewash.repository.UserRepository;
 import com.carewash.repository.WhatsAppConversationRepository;
 import com.carewash.repository.WhatsAppMessageRepository;
+import com.carewash.util.PhoneNumberNormalizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,12 +33,30 @@ public class WhatsAppConversationService {
                     newConversation.setCurrentState(WhatsAppConversationState.NEW);
                     newConversation.setLastMessageAt(LocalDateTime.now());
 
-                    // Try to link to an existing user
-                    Optional<User> userOpt = userRepository.findByPhone(phoneNumber);
-                    userOpt.ifPresent(user -> newConversation.setUserId(user.getId()));
+                    // Try to link to an existing user using normalized formats
+                    java.util.List<String> formats = PhoneNumberNormalizer.getPossibleFormats(phoneNumber);
+                    for (String format : formats) {
+                        Optional<User> userOpt = userRepository.findByPhone(format);
+                        if (userOpt.isPresent()) {
+                            newConversation.setUserId(userOpt.get().getId());
+                            break;
+                        }
+                    }
 
                     return conversationRepository.save(newConversation);
                 });
+    }
+
+    @Transactional
+    public void clearSession(Long conversationId) {
+        conversationRepository.findById(conversationId).ifPresent(conv -> {
+            conv.setSelectedServiceId(null);
+            conv.setSelectedVehicleId(null);
+            conv.setSelectedAddressId(null);
+            conv.setSelectedDate(null);
+            conv.setSelectedTime(null);
+            conversationRepository.save(conv);
+        });
     }
 
     @Transactional

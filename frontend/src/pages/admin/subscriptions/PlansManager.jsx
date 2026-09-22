@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../services/api';
 import { Plus, Edit2, CheckCircle2, XCircle } from 'lucide-react';
 
 const PlansManager = () => {
@@ -12,10 +12,7 @@ const PlansManager = () => {
 
   const fetchPlans = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8080/api/admin/subscriptions/plans', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/admin/subscription-plans');
       setPlans(response.data);
     } catch (error) {
       console.error('Error fetching admin plans', error);
@@ -54,7 +51,7 @@ const PlansManager = () => {
                   <td className="px-6 py-4 font-semibold text-slate-900">{plan.name}</td>
                   <td className="px-6 py-4">{plan.billingPeriod}</td>
                   <td className="px-6 py-4">₹{plan.price}</td>
-                  <td className="px-6 py-4">{plan.includedWashes} washes</td>
+                  <td className="px-6 py-4">{plan.washLimit} washes</td>
                   <td className="px-6 py-4">
                     {plan.active ? (
                       <span className="flex items-center gap-1 text-emerald-600 text-xs font-bold bg-emerald-50 px-2 py-1 rounded w-max">

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 
 const PlansList = () => {
   const [plans, setPlans] = useState([]);
@@ -13,7 +13,7 @@ const PlansList = () => {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/subscriptions/plans');
+        const response = await api.get('/subscription-plans');
         setPlans(response.data);
       } catch (error) {
         console.error('Error fetching plans', error);
@@ -47,6 +47,12 @@ const PlansList = () => {
           
           <div className="mt-8 inline-flex bg-slate-800 p-1 rounded-full border border-slate-700">
             <button 
+              onClick={() => setBillingCycle('WEEKLY')}
+              className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${billingCycle === 'WEEKLY' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}
+            >
+              Weekly
+            </button>
+            <button 
               onClick={() => setBillingCycle('MONTHLY')}
               className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${billingCycle === 'MONTHLY' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}
             >
@@ -79,13 +85,13 @@ const PlansList = () => {
               
               <div className="mb-6">
                 <span className="text-4xl font-extrabold">₹{plan.price}</span>
-                <span className="text-slate-400">/{billingCycle === 'MONTHLY' ? 'mo' : 'yr'}</span>
+                <span className="text-slate-400">/{billingCycle === 'MONTHLY' ? 'mo' : (billingCycle === 'YEARLY' ? 'yr' : 'wk')}</span>
               </div>
               
               <div className="bg-slate-700/50 rounded-lg p-4 mb-6">
                 <div className="flex items-center gap-3 text-blue-400 font-semibold mb-2">
                   <Info className="w-5 h-5" />
-                  {plan.includedWashes} Washes Included
+                  {plan.washLimit} Washes Included
                 </div>
                 <div className="text-sm text-slate-300">
                   Additional washes at ₹{plan.additionalWashPrice}
