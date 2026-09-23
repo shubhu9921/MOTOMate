@@ -12,6 +12,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface WhatsAppConversationRepository extends JpaRepository<WhatsAppConversation, Long>, JpaSpecificationExecutor<WhatsAppConversation> {
     Optional<WhatsAppConversation> findByPhoneNumber(String phoneNumber);
 
-    @Query("SELECT COUNT(c) FROM WhatsAppConversation c WHERE c.isActive = true")
+    @Query("SELECT COUNT(c) FROM WhatsAppConversation c WHERE c.currentState != com.carewash.entity.WhatsAppConversationState.COMPLETED")
     long countActiveConversations();
 }
