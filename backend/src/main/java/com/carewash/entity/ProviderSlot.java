@@ -33,6 +33,7 @@ public class ProviderSlot {
     @Column(nullable = false)
     private LocalTime endTime;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean isBooked = false;
 

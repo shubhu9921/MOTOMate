@@ -35,14 +35,17 @@ public class SubscriptionUsage {
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UsageType usageType = UsageType.WASH;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UsageStatus usageStatus = UsageStatus.CONSUMED;
 
+    @Builder.Default
     @Column(nullable = false)
     private Integer washConsumed = 1;
 

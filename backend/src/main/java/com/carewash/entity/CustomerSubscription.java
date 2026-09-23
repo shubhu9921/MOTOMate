@@ -51,18 +51,32 @@ public class CustomerSubscription {
     @Column(nullable = false)
     private SubscriptionStatus status;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean autoRenew = false;
 
     @Column(nullable = false)
     private Integer washesAllowed;
 
-    @Column(nullable = false, columnDefinition = "int default 0")
+    @Builder.Default
+    @Column(nullable = false)
     private Integer washesUsed = 0;
 
     @Transient
     public Integer getRemainingWashes() {
         return washesAllowed - washesUsed;
+    }
+
+    public SubscriptionPlan getPlan() {
+        return this.plan;
+    }
+
+    public Vehicle getVehicle() {
+        return this.vehicle;
+    }
+
+    public LocalDate getEndDate() {
+        return this.endDate;
     }
 
     @Column(nullable = false)

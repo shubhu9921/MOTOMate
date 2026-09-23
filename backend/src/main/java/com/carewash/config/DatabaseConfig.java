@@ -28,8 +28,12 @@ public class DatabaseConfig {
 
         // If Render or Heroku sets DATABASE_URL in postgres:// format, convert it to jdbc:postgresql://
         String jdbcUrl = databaseUrl;
-        if (jdbcUrl != null && jdbcUrl.startsWith("postgres://")) {
-            jdbcUrl = jdbcUrl.replaceFirst("postgres://", "jdbc:postgresql://");
+        if (jdbcUrl != null) {
+            if (jdbcUrl.startsWith("postgres://")) {
+                jdbcUrl = jdbcUrl.replaceFirst("postgres://", "jdbc:postgresql://");
+            } else if (jdbcUrl.startsWith("postgresql://")) {
+                jdbcUrl = jdbcUrl.replaceFirst("postgresql://", "jdbc:postgresql://");
+            }
         }
 
         dataSource.setJdbcUrl(jdbcUrl);

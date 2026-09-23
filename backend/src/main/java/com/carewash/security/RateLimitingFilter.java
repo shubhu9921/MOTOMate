@@ -63,14 +63,18 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     }
 
     private Bucket createLoginBucket(String ip) {
-        Refill refill = Refill.greedy(loginCapacity, Duration.ofMinutes(loginWindowMinutes));
-        Bandwidth limit = Bandwidth.classic(loginCapacity, refill);
+        Bandwidth limit = Bandwidth.builder()
+                .capacity(loginCapacity)
+                .refillGreedy(loginCapacity, Duration.ofMinutes(loginWindowMinutes))
+                .build();
         return Bucket.builder().addLimit(limit).build();
     }
 
     private Bucket createRegisterBucket(String ip) {
-        Refill refill = Refill.greedy(registerCapacity, Duration.ofMinutes(registerWindowMinutes));
-        Bandwidth limit = Bandwidth.classic(registerCapacity, refill);
+        Bandwidth limit = Bandwidth.builder()
+                .capacity(registerCapacity)
+                .refillGreedy(registerCapacity, Duration.ofMinutes(registerWindowMinutes))
+                .build();
         return Bucket.builder().addLimit(limit).build();
     }
 

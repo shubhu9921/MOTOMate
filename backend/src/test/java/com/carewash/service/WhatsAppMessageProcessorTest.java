@@ -25,6 +25,12 @@ public class WhatsAppMessageProcessorTest {
     @Mock
     private WhatsAppService whatsAppService;
 
+    @Mock
+    private com.carewash.repository.WhatsAppConversationRepository conversationRepository;
+
+    @Mock
+    private com.carewash.repository.ServiceRepository serviceRepository;
+
     private WhatsAppConversation conversation;
 
     @BeforeEach
@@ -33,11 +39,12 @@ public class WhatsAppMessageProcessorTest {
         conversation = WhatsAppConversation.builder()
                 .id(1L)
                 .phoneNumber("1234567890")
+                .userId(10L)
                 .currentState(WhatsAppConversationState.NEW)
                 .build();
         
-        when(conversationService.getOrCreateConversation(anyString())).thenReturn(conversation);
-        when(conversationService.isDuplicateMessage(anyString())).thenReturn(false);
+        when(conversationService.getOrCreateConversation(any())).thenReturn(conversation);
+        when(conversationService.isDuplicateMessage(any())).thenReturn(false);
     }
 
     @Test
@@ -49,7 +56,7 @@ public class WhatsAppMessageProcessorTest {
         
         processor.processIncomingMessage(msg);
         
-        verify(conversationService, never()).getOrCreateConversation(anyString());
+        verify(conversationService, never()).getOrCreateConversation(any());
     }
 
     @Test
@@ -74,8 +81,10 @@ public class WhatsAppMessageProcessorTest {
         
         processor.processIncomingMessage(msg);
         
-        verify(conversationService).updateConversationState(1L, WhatsAppConversationState.MAIN_MENU);
-        verify(whatsAppService).sendWhatsAppMessage(any(), contains("Welcome to MotorMate"));
+        verify(conversationService).clearSession(1L);
+        verify(conversationRepository).save(argThat(c -> c.getCurrentState() == WhatsAppConversationState.MAIN_MENU));
+        verify(whatsAppService).sendWhatsAppMessage(any(), contains("MotorMate Menu"));
+        verify(conversationService).saveOutgoingMessage(eq(1L), contains("MotorMate Menu"), eq(com.carewash.entity.WhatsAppMessageStatus.SENT));
     }
 
     @Test
@@ -87,9 +96,32 @@ public class WhatsAppMessageProcessorTest {
                 .text("1")
                 .build();
         
+        // Mock a service so the list isn't empty
+        com.carewash.entity.Service service = new com.carewash.entity.Service();
+        service.setName("Basic Wash");
+        service.setPrice(499.0);
+        service.setActive(true);
+        when(serviceRepository.findAll()).thenReturn(new java.util.ArrayList<>(java.util.Collections.singletonList(service)));
+        
         processor.processIncomingMessage(msg);
         
-        verify(whatsAppService).sendWhatsAppMessage(any(), contains("Booking a car wash is coming next"));
+        verify(conversationRepository).save(argThat(c -> c.getCurrentState() == WhatsAppConversationState.SELECTING_SERVICE));
+        verify(whatsAppService).sendWhatsAppMessage(any(), contains("Select a service to book"));
+    }
+
+    @Test
+    public void testMenuOption1_UnlinkedUser() {
+        conversation.setCurrentState(WhatsAppConversationState.MAIN_MENU);
+        conversation.setUserId(null);
+        WhatsAppIncomingMessage msg = WhatsAppIncomingMessage.builder()
+                .messageId("msg2")
+                .messageType("text")
+                .text("1")
+                .build();
+        
+        processor.processIncomingMessage(msg);
+        
+        verify(whatsAppService).sendWhatsAppMessage(any(), contains("not linked to a MotorMate account"));
     }
 
     @Test
@@ -103,8 +135,9 @@ public class WhatsAppMessageProcessorTest {
         
         processor.processIncomingMessage(msg);
         
-        verify(conversationService).updateConversationState(1L, WhatsAppConversationState.SUPPORT);
+        verify(conversationRepository).save(argThat(c -> c.getCurrentState() == WhatsAppConversationState.SUPPORT));
         verify(whatsAppService).sendWhatsAppMessage(any(), contains("MotorMate Support"));
+        verify(conversationService).saveOutgoingMessage(eq(1L), contains("MotorMate Support"), eq(com.carewash.entity.WhatsAppMessageStatus.SENT));
     }
 
     @Test
@@ -118,7 +151,9 @@ public class WhatsAppMessageProcessorTest {
         
         processor.processIncomingMessage(msg);
         
-        verify(conversationService).updateConversationState(1L, WhatsAppConversationState.MAIN_MENU);
-        verify(whatsAppService).sendWhatsAppMessage(any(), contains("Welcome to MotorMate"));
+        verify(conversationService).clearSession(1L);
+        verify(conversationRepository).save(argThat(c -> c.getCurrentState() == WhatsAppConversationState.MAIN_MENU));
+        verify(whatsAppService).sendWhatsAppMessage(any(), contains("MotorMate Menu"));
+        verify(conversationService).saveOutgoingMessage(eq(1L), contains("MotorMate Menu"), eq(com.carewash.entity.WhatsAppMessageStatus.SENT));
     }
 }

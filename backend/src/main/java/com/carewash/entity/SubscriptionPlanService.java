@@ -28,9 +28,11 @@ public class SubscriptionPlanService {
     @JoinColumn(name = "service_id", nullable = false)
     private Service service;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean isIncluded = true;
 
-    @Column(nullable = false, columnDefinition = "double default 0.0")
+    @Builder.Default
+    @Column(nullable = false)
     private Double discountPercentage = 0.0;
 }

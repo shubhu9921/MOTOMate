@@ -147,6 +147,11 @@ public class WhatsAppPhase3Test {
         v1.setBrand("Hyundai");
         when(vehicleRepository.findByUserId(10L)).thenReturn(Arrays.asList(v1));
 
+        // Addresses for this user (so we proceed to SELECTING_ADDRESS)
+        Address a1 = new Address();
+        a1.setId(700L);
+        when(addressRepository.findByUserId(10L)).thenReturn(Arrays.asList(a1));
+
         messageProcessor.processIncomingMessage(msg);
 
         // Should successfully select the vehicle because it was fetched by userId (findByUserId)

@@ -32,6 +32,7 @@ public class WhatsAppConversation {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private WhatsAppConversationState currentState = WhatsAppConversationState.NEW;
 
     private LocalDateTime lastMessageAt;

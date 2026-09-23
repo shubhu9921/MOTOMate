@@ -33,6 +33,7 @@ public class Service {
     @Column(nullable = false)
     private Integer durationMinutes;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean active = true;
 
@@ -45,6 +46,7 @@ public class Service {
     private String features;
     
     private Integer displayOrder;
+    @Builder.Default
     private Boolean premiumFlag = false;
 
     @CreationTimestamp

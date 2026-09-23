@@ -15,8 +15,17 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+import com.carewash.config.SecurityConfig;
+import com.carewash.config.WhatsAppConfig;
+import com.carewash.security.CustomUserDetailsService;
+import com.carewash.security.JwtAuthFilter;
+import com.carewash.security.JwtUtils;
+import com.carewash.security.RateLimitingFilter;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
+
+@WebMvcTest(AdminWhatsAppController.class)
+@Import({SecurityConfig.class, JwtAuthFilter.class, RateLimitingFilter.class})
 public class WhatsAppPhase5Test {
 
     @Autowired
@@ -24,6 +33,15 @@ public class WhatsAppPhase5Test {
 
     @MockBean
     private AdminWhatsAppService adminWhatsAppService;
+
+    @MockBean
+    private WhatsAppConfig whatsAppConfig;
+
+    @MockBean
+    private CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    private JwtUtils jwtUtils;
 
     @BeforeEach
     public void setup() {

@@ -57,10 +57,10 @@ public class Booking {
     private ServiceProvider serviceProvider;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(20) default 'PENDING'")
+    @Column(nullable = false, length = 20)
     private AssignmentStatus assignmentStatus = AssignmentStatus.PENDING;
 
-    @Column(nullable = false, columnDefinition = "int default 0")
+    @Column(nullable = false)
     private Integer assignmentAttemptCount = 0;
 
     public ServiceProvider getServiceProvider() {
@@ -77,16 +77,16 @@ public class Booking {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
-    @Column(nullable = false, columnDefinition = "varchar(20) default 'STATION'")
+    @Column(nullable = false, length = 20)
     private String serviceMode = "STATION"; // HOME or STATION
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
+    @Column(nullable = false)
     private Boolean requiresPickup = false;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
+    @Column(nullable = false)
     private Boolean hasSocietyPermission = false;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
+    @Column(nullable = false)
     private Boolean hasWaterAvailability = false;
 
     @Column(columnDefinition = "TEXT")
@@ -94,7 +94,7 @@ public class Booking {
 
     private String verificationOtp;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
+    @Column(nullable = false)
     private Boolean isVerified = false;
 
     @CreationTimestamp

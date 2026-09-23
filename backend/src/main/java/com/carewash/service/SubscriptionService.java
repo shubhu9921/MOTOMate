@@ -300,7 +300,7 @@ public class SubscriptionService {
         dto.setAmountPaid(sub.getAmountPaid());
         if (sub.getVehicle() != null) {
             dto.setVehicleId(sub.getVehicle().getId());
-            dto.setVehicleName(sub.getVehicle().getMake() + " " + sub.getVehicle().getModel());
+            dto.setVehicleName(sub.getVehicle().getBrand() + " " + sub.getVehicle().getModel());
         }
         if (sub.getPlan() != null && sub.getPlan().getPlanServices() != null) {
             dto.setPlanServices(sub.getPlan().getPlanServices().stream().map(ps -> {

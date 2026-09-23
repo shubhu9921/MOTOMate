@@ -41,13 +41,13 @@ public class Vehicle {
     @Column(nullable = false)
     private String color;
 
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "TEXT")
     private String vehicleImageUrl;
 
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "TEXT")
     private String numberPlateImageUrl;
 
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "TEXT")
     private String cleaningAreaImageUrl;
 
     @CreationTimestamp

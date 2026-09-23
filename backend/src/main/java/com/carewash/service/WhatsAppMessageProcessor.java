@@ -62,6 +62,7 @@ public class WhatsAppMessageProcessor {
 
         WhatsAppConversation conversation = conversationService.getOrCreateConversation(incomingMessage.getPhoneNumber());
 
+
         conversationService.saveIncomingMessage(
                 conversation.getId(),
                 incomingMessage.getMessageId(),
@@ -350,7 +351,6 @@ public class WhatsAppMessageProcessor {
                 Vehicle vehicle = vehicles.get(index);
                 // IDOR check: already covered by findByUserId
                 conversation.setSelectedVehicleId(vehicle.getId());
-                conversationRepository.save(conversation);
                 showAddressesForBooking(conversation);
             } else {
                 sendAndSaveResponse(conversation, "Invalid selection. Please reply with a valid number or BACK.");
@@ -371,8 +371,7 @@ public class WhatsAppMessageProcessor {
         StringBuilder sb = new StringBuilder("Select service address 📍\n");
         int index = 1;
         for (Address a : addresses) {
-            String type = a.getAddressType() != null ? a.getAddressType() : "Address";
-            sb.append(index++).append(". ").append(type).append(" - ").append(a.getCity()).append("\n");
+            sb.append(index++).append(". Address - ").append(a.getCity()).append("\n");
         }
         sb.append("\nReply with a number or BACK.");
 

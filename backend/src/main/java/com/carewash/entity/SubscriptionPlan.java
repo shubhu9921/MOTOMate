@@ -39,7 +39,8 @@ public class SubscriptionPlan {
     @Column(nullable = false)
     private Double price;
 
-    @Column(nullable = false, columnDefinition = "double default 0.0")
+    @Builder.Default
+    @Column(nullable = false)
     private Double discountPercentage = 0.0;
 
     @Column(nullable = false)
@@ -48,9 +49,11 @@ public class SubscriptionPlan {
     @Column(nullable = false)
     private Double additionalWashPrice;
 
-    @Column(nullable = false, columnDefinition = "int default 1")
+    @Builder.Default
+    @Column(nullable = false)
     private Integer vehicleLimit = 1;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean active = true;
 

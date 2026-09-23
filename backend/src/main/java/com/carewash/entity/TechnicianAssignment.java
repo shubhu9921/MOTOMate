@@ -29,13 +29,15 @@ public class TechnicianAssignment {
     @JoinColumn(name = "service_provider_id", nullable = false)
     private ServiceProvider serviceProvider;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AssignmentStatus status = AssignmentStatus.PENDING;
 
     private Double distanceKm;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
+    @Builder.Default
+    @Column(nullable = false)
     private Boolean isMandatory = false;
 
     private String rejectionReason;

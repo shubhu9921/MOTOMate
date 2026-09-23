@@ -46,10 +46,10 @@ public class ServiceProvider {
     // Radius in kilometers
     private Double serviceAreaRadius = 10.0;
     
-    @Column(nullable = false, columnDefinition = "boolean default true")
+    @Column(nullable = false)
     private Boolean providesHomeService = true;
     
-    @Column(nullable = false, columnDefinition = "boolean default true")
+    @Column(nullable = false)
     private Boolean providesStationService = true;
     
     private String companyIdUrl;

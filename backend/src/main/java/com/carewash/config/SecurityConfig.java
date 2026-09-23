@@ -74,6 +74,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/seed/**").permitAll()
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers("/api/webhooks/**").permitAll()
+                        .requestMatchers("/api/admin/whatsapp/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "OPERATIONS_MANAGER")
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/operations/**").hasAnyRole("OPERATIONS_MANAGER", "SUPER_ADMIN")
                         .requestMatchers("/api/finance/**").hasAnyRole("FINANCE_MANAGER", "SUPER_ADMIN")
