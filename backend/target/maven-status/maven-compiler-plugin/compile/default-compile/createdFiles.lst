@@ -19,7 +19,6 @@ com\carewash\controller\PaymentController.class
 com\carewash\dto\PaymentDto.class
 com\carewash\dto\AddressDto.class
 com\carewash\entity\NotificationType.class
-com\carewash\config\DatabaseConfig.class
 com\carewash\dto\AuthResponse.class
 com\carewash\event\BookingNotificationEvent.class
 com\carewash\dto\SubscriptionPlanDto.class
