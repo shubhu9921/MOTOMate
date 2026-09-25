@@ -6,23 +6,7 @@ import { VALIDATION_RULES, validateField } from '../../utils/validation';
 import api from '../../services/api';
 import RevoraLogo from '../../assets/Revora.png';
 
-const images = [
-  {
-    url: "https://images.unsplash.com/photo-1601362840469-51e4d8d58785?q=80&w=2070&auto=format&fit=crop",
-    title: "Premium Auto Care",
-    desc: "Book top-tier detailing and washing services from the palm of your hand."
-  },
-  {
-    url: "https://images.unsplash.com/photo-1542282088-fe8426682b8f?q=80&w=2070&auto=format&fit=crop",
-    title: "Deep Interior Cleaning",
-    desc: "Revitalize your seats and upholstery with our premium interior treatments."
-  },
-  {
-    url: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2070&auto=format&fit=crop",
-    title: "Engine Bay Detailing",
-    desc: "Safe and thorough engine cleaning for optimal performance and aesthetics."
-  }
-];
+
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -30,14 +14,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
+
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -96,54 +73,33 @@ const Login = () => {
   };
 
   return (
-    <div className="bg-zinc-950 flex font-sans min-h-[calc(100vh-80px)]">
-      {/* Left side - Image/Animation Slider */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-black overflow-hidden items-center justify-center group">
-        
-        {images.map((img, index) => (
-          <div 
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
-          >
-            <img 
-              src={img.url} 
-              alt={img.title} 
-              className={`w-full h-full object-cover opacity-50 transition-transform duration-[10000ms] ease-out ${index === currentImageIndex ? 'scale-105' : 'scale-100'}`}
-            />
-          </div>
-        ))}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
-        
-        <div className="relative z-10 p-12 text-center text-zinc-50 max-w-lg">
-          <img src={RevoraLogo} alt="REVORA" className="h-24 mx-auto mb-6 animate-bounce" />
-          
-          <div className="min-h-[120px] transition-all duration-500">
-            <h1 className="text-4xl font-bold mb-4 drop-shadow-lg animate-fade-in-up key={currentImageIndex}">
-              {images[currentImageIndex].title}
-            </h1>
-            <p className="text-lg text-slate-200 drop-shadow animate-fade-in-up delay-100 key={currentImageIndex}">
-              {images[currentImageIndex].desc}
-            </p>
-          </div>
-          
-          {/* Slider indicators */}
-          <div className="flex justify-center gap-2 mt-8">
-            {images.map((_, idx) => (
-              <button 
-                key={idx}
-                onClick={() => setCurrentImageIndex(idx)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentImageIndex ? 'w-8 bg-yellow-600' : 'bg-slate-500 hover:bg-zinc-700'}`}
-              />
-            ))}
-          </div>
+    <div className="bg-zinc-950 flex font-sans min-h-screen relative">
+      {/* Background - Image/Animation Slider */}
+      <div className="absolute inset-0 flex items-center justify-center group z-0 overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?q=80&w=2070&auto=format&fit=crop" 
+            alt="Car wash background" 
+            className="w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-[10000ms] ease-out"
+          />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/80" />
       </div>
 
-      {/* Right side - Form */}
-      <div className="flex-1 flex flex-col justify-center py-6 px-4 sm:px-6 lg:px-20 xl:px-24 bg-zinc-900 relative">
-        {/* Subtle background decoration */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-zinc-800 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
+      {/* Main Content Overlay */}
+      <div className="relative z-10 flex w-full flex-col lg:flex-row">
+        {/* Left side text */}
+        <div className="hidden lg:flex lg:w-1/2 p-12 text-center text-zinc-50 flex-col items-center justify-center">
+          <img src={RevoraLogo} alt="REVORA" className="h-24 mx-auto mb-6 animate-bounce" />
+          
+          <h1 className="text-4xl font-bold mb-4 drop-shadow-lg">Welcome to REVORA</h1>
+          <p className="text-lg text-slate-200 drop-shadow">
+            Book top-tier detailing and washing services from the palm of your hand.
+          </p>
+        </div>
+
+        {/* Right side - Form */}
+        <div className="flex-1 flex flex-col justify-center py-6 px-4 sm:px-6 lg:px-20 xl:px-24 relative">
         
         <div className="mx-auto w-full max-w-sm lg:max-w-md relative z-10 animate-fade-in-up delay-100">
           
@@ -157,7 +113,7 @@ const Login = () => {
               Login to manage your car services
             </p>
 
-            <form className="space-y-4" onSubmit={handleSubmit}>
+            <form className="space-y-3" onSubmit={handleSubmit}>
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
                   {error}
@@ -245,6 +201,7 @@ const Login = () => {
                   Create an Account
                 </Link>
               </div>
+            </div>
             </div>
           </div>
         </div>

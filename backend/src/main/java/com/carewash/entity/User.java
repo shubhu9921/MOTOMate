@@ -25,11 +25,19 @@ public class User {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Column(nullable = false)
     private String name;
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Column(nullable = false, unique = true)
@@ -39,6 +47,10 @@ public class User {
 
     public String getPhone() {
         return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     @Column(nullable = false)

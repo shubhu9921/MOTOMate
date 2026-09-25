@@ -21,8 +21,7 @@ const GlobalNavbar = () => {
     return null;
   }
   
-  const transparentPaths = ['/'];
-  const isTransparent = transparentPaths.includes(location.pathname);
+  const isTransparent = true;
   return <Navbar isTransparent={isTransparent} />;
 };
 

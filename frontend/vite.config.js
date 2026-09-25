@@ -8,4 +8,15 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://revora-x9f8.onrender.com',
+        changeOrigin: true,
+        headers: {
+          Origin: 'https://revora-x9f8.onrender.com'
+        }
+      }
+    }
+  }
 })

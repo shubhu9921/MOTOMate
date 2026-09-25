@@ -110,36 +110,36 @@ const Register = () => {
   };
 
   return (
-    <div className="bg-zinc-950 flex font-sans min-h-[calc(100vh-80px)]">
-      {/* Left side - Image/Animation */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-black overflow-hidden items-center justify-center group">
+    <div className="bg-zinc-950 flex font-sans min-h-screen relative">
+      {/* Background - Image/Animation */}
+      <div className="absolute inset-0 flex items-center justify-center group z-0 overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?q=80&w=2070&auto=format&fit=crop" 
             alt="Car wash background" 
             className="w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-[10000ms] ease-out"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
         </div>
-        
-        <div className="relative z-10 p-12 text-center text-zinc-50 max-w-lg animate-fade-in-up">
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/80" />
+      </div>
+
+      {/* Main Content Overlay */}
+      <div className="relative z-10 flex w-full flex-col lg:flex-row">
+        {/* Left side text */}
+        <div className="hidden lg:flex lg:w-1/2 p-12 text-center text-zinc-50 flex-col items-center justify-center animate-fade-in-up">
           <img src={RevoraLogo} alt="REVORA" className="h-24 mx-auto mb-6 animate-bounce" />
           <h1 className="text-4xl font-bold mb-4 drop-shadow-lg">Join REVORA</h1>
           <p className="text-lg text-slate-200 drop-shadow">
             Create an account to book top-tier detailing and washing services from the palm of your hand.
           </p>
         </div>
-      </div>
 
-      {/* Right side - Form */}
-      <div className="flex-1 flex flex-col justify-center py-6 px-4 sm:px-6 lg:px-20 xl:px-24 bg-zinc-900 overflow-y-auto relative">
-        {/* Subtle background decoration */}
-        <div className="absolute top-0 left-0 w-64 h-64 bg-zinc-800 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" />
-        <div className="absolute bottom-0 right-0 w-64 h-64 bg-indigo-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
+        {/* Right side - Form */}
+        <div className="flex-1 flex flex-col justify-center pt-24 pb-6 px-4 sm:px-6 lg:px-20 xl:px-24 relative overflow-y-auto">
         
-        <div className="mx-auto w-full max-w-sm lg:max-w-md relative z-10 animate-fade-in-up delay-100">
+        <div className="mx-auto w-full max-w-sm lg:max-w-md relative z-10 animate-fade-in-up delay-100 mt-12 lg:mt-0">
           
-          <div className="bg-zinc-950 px-8 py-8 shadow-xl shadow-slate-200/50 rounded-2xl border border-zinc-800">
+          <div className="bg-zinc-950 px-8 py-6 shadow-xl shadow-slate-200/50 rounded-2xl border border-zinc-800">
             <Link to="/" className="flex items-center justify-center gap-2 mb-6 group w-fit mx-auto">
               <img src={RevoraLogo} alt="REVORA" className="h-16 lg:hidden" />
             </Link>
@@ -149,7 +149,7 @@ const Register = () => {
               Join REVORA today
             </p>
 
-            <form className="space-y-3" onSubmit={handleSubmit}>
+            <form className="space-y-2" onSubmit={handleSubmit}>
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
                   {error}
@@ -323,6 +323,7 @@ const Register = () => {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>
