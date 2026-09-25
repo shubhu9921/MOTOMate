@@ -91,7 +91,7 @@ const Navbar = ({ isTransparent = false }) => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2">
               <Car className={`h-8 w-8 ${isTransparent ? 'text-white' : 'text-teal-400'}`} />
-              <span className="font-bold text-2xl tracking-tight text-white">Motor<span className="text-teal-400">Mate</span></span>
+              <span className="font-bold text-2xl tracking-tight text-white">MOTO<span className="text-teal-400">Mate</span></span>
             </Link>
           </div>
           
