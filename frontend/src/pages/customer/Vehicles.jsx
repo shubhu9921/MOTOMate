@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Car } from 'lucide-react';
+import { VALIDATION_RULES, validateField } from '../../utils/validation';
 import api from '../../services/api';
 import { Link } from 'react-router-dom';
 
@@ -33,6 +34,16 @@ const Vehicles = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
+    let errorMsg = validateField(formData.vehicleNumber, { ...VALIDATION_RULES.VEHICLE_REGISTRATION, required: true }, "Vehicle Number")
+      || validateField(formData.brand, { required: true, maxLength: 50 }, "Brand")
+      || validateField(formData.model, { required: true, maxLength: 50 }, "Model")
+      || validateField(formData.color, { required: true, maxLength: 30 }, "Color");
+      
+    if (errorMsg) {
+      setError(errorMsg);
+      return;
+    }
     
     try {
       if (editingId) {

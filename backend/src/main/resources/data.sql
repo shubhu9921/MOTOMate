@@ -1,2 +1,0 @@
--- This file is intentionally left blank. 
--- See data-mysql.sql and data-postgresql.sql for profile-specific data seeding.

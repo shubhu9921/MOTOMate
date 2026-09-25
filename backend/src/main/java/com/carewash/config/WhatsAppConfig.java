@@ -16,11 +16,13 @@ public class WhatsAppConfig {
     private String businessAccountId = "";
     private String apiVersion = "v17.0";
     private String apiUrl = "https://graph.facebook.com";
+    private String appSecret = "";
 
     public boolean isConfigured() {
         return enabled && 
                accessToken != null && !accessToken.trim().isEmpty() &&
-               phoneNumberId != null && !phoneNumberId.trim().isEmpty();
+               phoneNumberId != null && !phoneNumberId.trim().isEmpty() &&
+               appSecret != null && !appSecret.trim().isEmpty();
     }
 
     public boolean isEnabled() {
@@ -78,4 +80,16 @@ public class WhatsAppConfig {
     public void setApiUrl(String apiUrl) {
         this.apiUrl = apiUrl;
     }
+
+    public String getAppSecret() {
+        return appSecret;
+    }
+
+    public void setAppSecret(String appSecret) {
+        this.appSecret = appSecret;
+    }
 }
+
+
+
+

@@ -39,7 +39,7 @@ const PlansList = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
-            MotorMate Subscriptions
+            MOTOMate Subscriptions
           </h1>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
             Get unlimited shine. Choose a plan that fits your car care needs and save more.

@@ -32,12 +32,20 @@ public class WhatsAppConversationDto {
 
     // For masking phone numbers securely
     public void setMaskedPhoneNumber(String phone) {
-        if (phone == null || phone.length() < 4) {
-            this.phoneNumber = phone;
+        if (phone == null) {
+            this.phoneNumber = null;
+            return;
+        }
+        if (phone.length() <= 4) {
+            this.phoneNumber = phone.replaceAll(".", "*");
             return;
         }
         String last4 = phone.substring(phone.length() - 4);
-        String prefix = phone.substring(0, phone.length() - 4).replaceAll("[0-9]", "*");
+        String prefix = phone.substring(0, phone.length() - 4).replaceAll(".", "*");
         this.phoneNumber = prefix + last4;
     }
 }
+
+
+
+

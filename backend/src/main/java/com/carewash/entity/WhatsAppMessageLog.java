@@ -20,3 +20,7 @@ public class WhatsAppMessageLog {
     private String fromNumber;
     private LocalDateTime processedAt;
 }
+
+
+
+

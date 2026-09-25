@@ -12,3 +12,7 @@ public interface WhatsAppNotificationEventRepository extends JpaRepository<Whats
 
     long countByStatus(WhatsAppNotificationEventStatus status);
 }
+
+
+
+

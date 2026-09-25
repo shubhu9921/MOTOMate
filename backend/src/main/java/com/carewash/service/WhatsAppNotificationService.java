@@ -32,7 +32,7 @@ public class WhatsAppNotificationService {
     private static final int MAX_RETRIES = 3;
 
     @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handleBookingNotificationEvent(BookingNotificationEvent event) {
         if (!whatsappEnabled) {
             return;
@@ -83,7 +83,7 @@ public class WhatsAppNotificationService {
     }
 
     @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handleSubscriptionNotificationEvent(SubscriptionNotificationEvent event) {
         if (!whatsappEnabled) {
             return;
@@ -97,7 +97,8 @@ public class WhatsAppNotificationService {
             return;
         }
 
-        String eventKey = "sub_" + subscription.getId() + "_" + type.name() + "_" + System.currentTimeMillis();
+        String timestamp = subscription.getUpdatedAt() != null ? subscription.getUpdatedAt().toString() : String.valueOf(System.currentTimeMillis());
+        String eventKey = "sub_" + subscription.getId() + "_" + type.name() + "_" + timestamp;
 
         String recipientPhone = user.getPhone();
 
@@ -130,9 +131,11 @@ public class WhatsAppNotificationService {
             notificationEvent.setAttemptCount(notificationEvent.getAttemptCount() + 1);
             notificationEvent.setLastAttemptAt(LocalDateTime.now());
             
+            boolean sent = false;
             try {
                 // Actually send the message using existing service
                 whatsAppService.sendWhatsAppMessage(notificationEvent.getRecipientPhone(), message);
+                sent = true;
                 
                 // If no exception is thrown, we assume success
                 notificationEvent.setStatus(WhatsAppNotificationEventStatus.SENT);
@@ -140,6 +143,10 @@ public class WhatsAppNotificationService {
                 eventRepository.save(notificationEvent);
                 return;
             } catch (Exception e) {
+                if (sent) {
+                    System.err.println("WhatsApp sent successfully, but DB save failed. Skipping retry.");
+                    return;
+                }
                 notificationEvent.setErrorMessage(e.getMessage());
                 if (notificationEvent.getAttemptCount() < MAX_RETRIES) {
                     notificationEvent.setStatus(WhatsAppNotificationEventStatus.RETRYING);
@@ -199,3 +206,7 @@ public class WhatsAppNotificationService {
         }
     }
 }
+
+
+
+

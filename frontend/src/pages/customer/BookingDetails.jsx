@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Calendar, Clock, Car, MapPin, XCircle, ChevronLeft, CheckCircle2, Star, CreditCard, Banknote } from 'lucide-react';
+import { VALIDATION_RULES, validateField } from '../../utils/validation';
 import api from '../../services/api';
 
 const BookingDetails = () => {
@@ -55,6 +56,12 @@ const BookingDetails = () => {
   const submitReview = async (e) => {
     e.preventDefault();
     if (rating === 0) return alert('Please select a rating');
+    
+    let errorMsg = validateField(comment, { required: false, maxLength: 1000 }, "Review Comment");
+    if (errorMsg) {
+      alert(errorMsg);
+      return;
+    }
     
     setSubmittingReview(true);
     try {
@@ -308,7 +315,7 @@ const BookingDetails = () => {
         {booking.status === 'COMPLETED' && !reviewSubmitted && (
           <div className="bg-zinc-950 rounded-2xl shadow-sm border border-zinc-800 overflow-hidden p-6 md:p-8">
             <h2 className="text-2xl font-bold text-zinc-50 mb-2">Rate Your Service</h2>
-            <p className="text-zinc-400 mb-6">How was your experience with MotoMate? Your feedback helps us improve.</p>
+            <p className="text-zinc-400 mb-6">How was your experience with MOTOMate? Your feedback helps us improve.</p>
             
             <form onSubmit={submitReview}>
               <div className="mb-6 flex gap-2">

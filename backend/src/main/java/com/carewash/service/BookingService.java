@@ -88,7 +88,7 @@ public class BookingService {
         if (isSubscriptionBooking) {
             totalAmount = 0.0;
         } else {
-            double discount = subscriptionUsageService.getServiceDiscount(user.getId(), service.getId());
+            double discount = subscriptionUsageService.getServiceDiscount(vehicle.getId(), service.getId());
             if (discount > 0) {
                 totalAmount = totalAmount - (totalAmount * discount / 100.0);
             }
@@ -130,7 +130,7 @@ public class BookingService {
         savedBooking.setPayment(payment);
 
         if (isSubscriptionBooking) {
-            subscriptionUsageService.consumeWash(user.getId(), savedBooking, service, vehicle);
+            subscriptionUsageService.consumeWash(vehicle.getId(), savedBooking, service, vehicle);
         }
 
         // History

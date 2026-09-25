@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Car, Mail, Lock, User, Phone, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { VALIDATION_RULES, validateField } from '../../utils/validation';
 import api from '../../services/api';
 
 const Register = () => {
@@ -27,13 +28,19 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+    
+    let errorMsg = validateField(formData.name, { ...VALIDATION_RULES.NAME, required: true }, "Name")
+      || validateField(formData.email, { ...VALIDATION_RULES.EMAIL, required: true }, "Email")
+      || validateField(formData.phone, { ...VALIDATION_RULES.PHONE, required: true }, "Phone")
+      || validateField(formData.password, { ...VALIDATION_RULES.PASSWORD, required: true }, "Password");
+      
+    if (errorMsg) {
+      setError(errorMsg);
       return;
     }
-    
-    if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters');
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
       return;
     }
 
@@ -56,6 +63,12 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    
+    const otpError = validateField(formData.otp, { ...VALIDATION_RULES.OTP, required: true }, "OTP");
+    if (otpError) {
+      setError(otpError);
+      return;
+    }
 
     setLoading(true);
     setError('');
@@ -98,7 +111,7 @@ const Register = () => {
         
         <div className="relative z-10 p-12 text-center text-zinc-50 max-w-lg animate-fade-in-up">
           <Car className="h-16 w-16 mx-auto mb-6 text-yellow-400 animate-bounce" />
-          <h1 className="text-4xl font-bold mb-4 drop-shadow-lg">Join MotoMate</h1>
+          <h1 className="text-4xl font-bold mb-4 drop-shadow-lg">Join MOTOMate</h1>
           <p className="text-lg text-slate-200 drop-shadow">
             Create an account to book top-tier detailing and washing services from the palm of your hand.
           </p>
@@ -121,7 +134,7 @@ const Register = () => {
             
             <h2 className="text-3xl font-extrabold text-zinc-50 text-center">Create Account</h2>
             <p className="mt-1 text-sm text-zinc-400 text-center mb-6">
-              Join MotoMate today
+              Join MOTOMate today
             </p>
 
             <form className="space-y-3" onSubmit={handleSubmit}>

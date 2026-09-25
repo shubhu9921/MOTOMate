@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, MapPin } from 'lucide-react';
+import { VALIDATION_RULES, validateField } from '../../utils/validation';
 import api from '../../services/api';
 import { Link } from 'react-router-dom';
 
@@ -31,6 +32,16 @@ const Addresses = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
+    let errorMsg = validateField(formData.addressLine, { required: true, maxLength: 200 }, "Address Line")
+      || validateField(formData.city, { required: true, maxLength: 100 }, "City")
+      || validateField(formData.state, { required: true, maxLength: 100 }, "State")
+      || validateField(formData.pincode, { ...VALIDATION_RULES.PINCODE, required: true }, "Pincode");
+      
+    if (errorMsg) {
+      setError(errorMsg);
+      return;
+    }
     
     try {
       if (editingId) {

@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -37,9 +38,9 @@ public class SubscriptionUsageService {
                 .collect(Collectors.toList());
     }
 
-    public boolean isServiceIncluded(Long userId, Long serviceId) {
+    public boolean isServiceIncluded(Long vehicleId, Long serviceId) {
         Optional<CustomerSubscription> optSub = customerSubscriptionRepository
-                .findFirstByUserIdAndStatusOrderByIdDesc(userId, SubscriptionStatus.ACTIVE);
+                .findFirstByVehicleIdAndStatusOrderByIdDesc(vehicleId, SubscriptionStatus.ACTIVE);
         if (optSub.isEmpty()) return false;
         
         CustomerSubscription sub = optSub.get();
@@ -49,9 +50,9 @@ public class SubscriptionUsageService {
                 .anyMatch(ps -> ps.getService().getId().equals(serviceId) && ps.getIsIncluded());
     }
 
-    public Double getServiceDiscount(Long userId, Long serviceId) {
+    public Double getServiceDiscount(Long vehicleId, Long serviceId) {
         Optional<CustomerSubscription> optSub = customerSubscriptionRepository
-                .findFirstByUserIdAndStatusOrderByIdDesc(userId, SubscriptionStatus.ACTIVE);
+                .findFirstByVehicleIdAndStatusOrderByIdDesc(vehicleId, SubscriptionStatus.ACTIVE);
         if (optSub.isEmpty()) return 0.0;
 
         CustomerSubscription sub = optSub.get();
@@ -64,14 +65,10 @@ public class SubscriptionUsageService {
     }
 
     @Transactional
-    public void consumeWash(Long userId, Booking booking, com.carewash.entity.Service service, Vehicle vehicle) {
+    public void consumeWash(Long vehicleId, Booking booking, com.carewash.entity.Service service, Vehicle vehicle) {
         CustomerSubscription sub = customerSubscriptionRepository
-                .findFirstByUserIdAndStatusOrderByIdDesc(userId, SubscriptionStatus.ACTIVE)
+                .findFirstByVehicleIdAndStatusOrderByIdDesc(vehicleId, SubscriptionStatus.ACTIVE)
                 .orElseThrow(() -> new IllegalStateException("No active subscription"));
-
-        if (!sub.getVehicle().getId().equals(vehicle.getId())) {
-            throw new IllegalStateException("Subscription is not associated with this vehicle");
-        }
 
         if (sub.getEndDate().isBefore(java.time.LocalDate.now())) {
             throw new IllegalStateException("Subscription has expired");
@@ -89,7 +86,13 @@ public class SubscriptionUsageService {
         }
 
         sub.setWashesUsed(sub.getWashesUsed() + 1);
-        customerSubscriptionRepository.save(sub);
+        try {
+            customerSubscriptionRepository.save(sub);
+            // Flush to ensure the optimistic locking check happens immediately
+            customerSubscriptionRepository.flush();
+        } catch (ObjectOptimisticLockingFailureException e) {
+            throw new IllegalStateException("Concurrent subscription update detected. Please try again.");
+        }
 
         if (sub.getRemainingWashes() <= 1) { // 1 or 0
             eventPublisher.publishEvent(new SubscriptionNotificationEvent(this, sub, NotificationType.WASHES_LOW));

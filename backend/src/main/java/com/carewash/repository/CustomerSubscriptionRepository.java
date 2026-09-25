@@ -13,4 +13,5 @@ public interface CustomerSubscriptionRepository extends JpaRepository<CustomerSu
     List<CustomerSubscription> findByUserId(Long userId);
     List<CustomerSubscription> findByUserIdAndStatus(Long userId, SubscriptionStatus status);
     Optional<CustomerSubscription> findFirstByUserIdAndStatusOrderByIdDesc(Long userId, SubscriptionStatus status);
+    Optional<CustomerSubscription> findFirstByVehicleIdAndStatusOrderByIdDesc(Long vehicleId, SubscriptionStatus status);
 }

@@ -12,9 +12,9 @@ public class ApiResponse<T> {
     private boolean success;
     private String message;
     private T data;
-    private List<String> errors;
+    private Object errors;
 
-    public ApiResponse(boolean success, String message, T data, List<String> errors) {
+    public ApiResponse(boolean success, String message, T data, Object errors) {
         this.success = success;
         this.message = message;
         this.data = data;
@@ -29,7 +29,7 @@ public class ApiResponse<T> {
         private boolean success;
         private String message;
         private T data;
-        private List<String> errors;
+        private Object errors;
 
         ApiResponseBuilder() {}
 
@@ -48,7 +48,7 @@ public class ApiResponse<T> {
             return this;
         }
 
-        public ApiResponseBuilder<T> errors(List<String> errors) {
+        public ApiResponseBuilder<T> errors(Object errors) {
             this.errors = errors;
             return this;
         }

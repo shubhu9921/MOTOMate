@@ -2,23 +2,28 @@ package com.carewash.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class ContactRequest {
     @NotBlank(message = "Name is required")
+    @Size(max = 100, message = "Name cannot exceed 100 characters")
     private String name;
 
     @Email(message = "Invalid email format")
     @NotBlank(message = "Email is required")
+    @Size(max = 150, message = "Email cannot exceed 150 characters")
     private String email;
 
     private String phone;
 
     @NotBlank(message = "Subject is required")
+    @Size(max = 150, message = "Subject cannot exceed 150 characters")
     private String subject;
 
     @NotBlank(message = "Message is required")
+    @Size(min = 10, max = 2000, message = "Message must be between 10 and 2000 characters")
     private String message;
 
     public String getName() { return name; }

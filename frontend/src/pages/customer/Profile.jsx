@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Phone, Lock, Save } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { VALIDATION_RULES, validateField } from '../../utils/validation';
 import api from '../../services/api';
 import { Link } from 'react-router-dom';
 
@@ -24,6 +25,15 @@ const Profile = () => {
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
+    
+    let errorMsg = validateField(profileData.name, { ...VALIDATION_RULES.NAME, required: true }, "Name")
+      || validateField(profileData.phone, { ...VALIDATION_RULES.PHONE, required: true }, "Phone");
+      
+    if (errorMsg) {
+      setProfileMsg({ type: 'error', text: errorMsg });
+      return;
+    }
+
     setLoading(true);
     setProfileMsg({ type: '', text: '' });
     
@@ -44,6 +54,14 @@ const Profile = () => {
 
   const handlePasswordUpdate = async (e) => {
     e.preventDefault();
+    
+    let errorMsg = validateField(passwordData.currentPassword, { ...VALIDATION_RULES.PASSWORD, required: true }, "Current Password")
+      || validateField(passwordData.newPassword, { ...VALIDATION_RULES.PASSWORD, required: true }, "New Password");
+      
+    if (errorMsg) {
+      setPasswordMsg({ type: 'error', text: errorMsg });
+      return;
+    }
     
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       setPasswordMsg({ type: 'error', text: 'Passwords do not match' });

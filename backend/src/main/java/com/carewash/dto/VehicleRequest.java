@@ -3,34 +3,41 @@ package com.carewash.dto;
 import com.carewash.entity.VehicleType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class VehicleRequest {
     @NotBlank(message = "Vehicle number is required")
+    @Size(max = 20, message = "Vehicle number cannot exceed 20 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Vehicle number must be alphanumeric")
     private String vehicleNumber;
 
     @NotNull(message = "Vehicle type is required")
     private VehicleType vehicleType;
 
     @NotBlank(message = "Brand is required")
+    @Size(max = 50, message = "Brand cannot exceed 50 characters")
     private String brand;
 
     @NotBlank(message = "Model is required")
+    @Size(max = 50, message = "Model cannot exceed 50 characters")
     private String model;
 
     @NotBlank(message = "Color is required")
+    @Size(max = 30, message = "Color cannot exceed 30 characters")
     private String color;
 
     @NotBlank(message = "Vehicle image is required")
-    @jakarta.validation.constraints.Size(max = 5000000, message = "Image size exceeds maximum limit")
+    @Size(max = 5000000, message = "Image size exceeds maximum limit")
     private String vehicleImageUrl;
     
     @NotBlank(message = "Number plate image is required")
-    @jakarta.validation.constraints.Size(max = 5000000, message = "Image size exceeds maximum limit")
+    @Size(max = 5000000, message = "Image size exceeds maximum limit")
     private String numberPlateImageUrl;
     
-    @jakarta.validation.constraints.Size(max = 5000000, message = "Image size exceeds maximum limit")
+    @Size(max = 5000000, message = "Image size exceeds maximum limit")
     private String cleaningAreaImageUrl;
 
     public String getVehicleNumber() { return vehicleNumber; }

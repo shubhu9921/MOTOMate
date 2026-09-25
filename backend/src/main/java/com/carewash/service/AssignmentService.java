@@ -67,29 +67,47 @@ public class AssignmentService {
             return;
         }
 
-        ProviderCandidate bestCandidate = candidates.get(0);
-        ServiceProvider selectedProvider = bestCandidate.provider;
-        double distanceKm = bestCandidate.distanceKm;
+        for (ProviderCandidate candidate : candidates) {
+            Optional<ServiceProvider> lockedProviderOpt = providerRepository.findByIdWithPessimisticWriteLock(candidate.provider.getId());
+            if (lockedProviderOpt.isEmpty()) {
+                continue;
+            }
 
-        TechnicianAssignment assignment = new TechnicianAssignment();
-        assignment.setBooking(booking);
-        assignment.setServiceProvider(selectedProvider);
-        assignment.setStatus(AssignmentStatus.PENDING);
-        assignment.setDistanceKm(distanceKm);
-        assignment.setIsMandatory(distanceKm <= MANDATORY_RADIUS_KM);
+            ServiceProvider lockedProvider = lockedProviderOpt.get();
+            if (hasTimeConflict(lockedProvider, booking)) {
+                // Provider was concurrently assigned to another booking
+                continue; 
+            }
 
-        assignmentRepository.save(assignment);
+            // Acquired lock and confirmed availability
+            ServiceProvider selectedProvider = lockedProvider;
+            double distanceKm = candidate.distanceKm;
 
-        booking.setServiceProvider(selectedProvider);
-        booking.setAssignmentStatus(AssignmentStatus.ASSIGNED);
-        booking.setAssignmentAttemptCount(booking.getAssignmentAttemptCount() + 1);
+            TechnicianAssignment assignment = new TechnicianAssignment();
+            assignment.setBooking(booking);
+            assignment.setServiceProvider(selectedProvider);
+            assignment.setStatus(AssignmentStatus.PENDING);
+            assignment.setDistanceKm(distanceKm);
+            assignment.setIsMandatory(distanceKm <= MANDATORY_RADIUS_KM);
+
+            assignmentRepository.save(assignment);
+
+            booking.setServiceProvider(selectedProvider);
+            booking.setAssignmentStatus(AssignmentStatus.ASSIGNED);
+            booking.setAssignmentAttemptCount(booking.getAssignmentAttemptCount() + 1);
+            bookingRepository.save(booking);
+
+            notificationService.createNotification(selectedProvider.getUser(), "New Job Assigned",
+                    "You have been auto-assigned to booking #" + booking.getId() + ". Distance: " + String.format("%.1f", distanceKm) + " km.",
+                    NotificationType.PROVIDER_ASSIGNED);
+                    
+            eventPublisher.publishEvent(new com.carewash.event.BookingNotificationEvent(this, booking, NotificationType.PROVIDER_ASSIGNED));
+            return; // Successfully assigned
+        }
+
+        // If loop completes, all candidates were either concurrently taken or unavailable
+        booking.setAssignmentStatus(AssignmentStatus.PENDING);
         bookingRepository.save(booking);
-
-        notificationService.createNotification(selectedProvider.getUser(), "New Job Assigned",
-                "You have been auto-assigned to booking #" + booking.getId() + ". Distance: " + String.format("%.1f", distanceKm) + " km.",
-                NotificationType.PROVIDER_ASSIGNED);
-                
-        eventPublisher.publishEvent(new com.carewash.event.BookingNotificationEvent(this, booking, NotificationType.PROVIDER_ASSIGNED));
     }
 
     private boolean supportsServiceMode(ServiceProvider p, String serviceMode) {

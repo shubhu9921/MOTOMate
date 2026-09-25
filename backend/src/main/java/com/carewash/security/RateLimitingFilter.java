@@ -31,8 +31,22 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     @Value("${app.rate-limit.register.window-minutes:60}")
     private int registerWindowMinutes;
 
+    @Value("${app.rate-limit.bookings.capacity:10}")
+    private int bookingCapacity;
+
+    @Value("${app.rate-limit.bookings.window-minutes:60}")
+    private int bookingWindowMinutes;
+
+    @Value("${app.rate-limit.whatsapp.capacity:100}")
+    private int whatsappCapacity;
+
+    @Value("${app.rate-limit.whatsapp.window-minutes:1}")
+    private int whatsappWindowMinutes;
+
     private final ConcurrentHashMap<String, Bucket> loginBuckets = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Bucket> registerBuckets = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Bucket> bookingBuckets = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Bucket> whatsappBuckets = new ConcurrentHashMap<>();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -53,7 +67,27 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             Bucket bucket = registerBuckets.computeIfAbsent(ip, this::createRegisterBucket);
             if (!bucket.tryConsume(1)) {
                 response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+                response.setHeader("Retry-After", String.valueOf(registerWindowMinutes * 60));
                 response.getWriter().write("{\"success\":false,\"message\":\"Too many registration attempts. Please try again later.\"}");
+                response.setContentType("application/json");
+                return;
+            }
+        } else if (path.equals("/api/bookings") && request.getMethod().equals("POST")) {
+            // For bookings, use IP as identity for unauthenticated fallback, but normally it's authenticated.
+            Bucket bucket = bookingBuckets.computeIfAbsent(ip, this::createBookingBucket);
+            if (!bucket.tryConsume(1)) {
+                response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+                response.setHeader("Retry-After", String.valueOf(bookingWindowMinutes * 60));
+                response.getWriter().write("{\"success\":false,\"message\":\"Too many booking attempts. Please try again later.\"}");
+                response.setContentType("application/json");
+                return;
+            }
+        } else if (path.equals("/api/whatsapp/webhook") && request.getMethod().equals("POST")) {
+            Bucket bucket = whatsappBuckets.computeIfAbsent(ip, this::createWhatsappBucket);
+            if (!bucket.tryConsume(1)) {
+                response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+                response.setHeader("Retry-After", String.valueOf(whatsappWindowMinutes * 60));
+                response.getWriter().write("{\"success\":false,\"message\":\"Too many webhook requests.\"}");
                 response.setContentType("application/json");
                 return;
             }
@@ -74,6 +108,22 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         Bandwidth limit = Bandwidth.builder()
                 .capacity(registerCapacity)
                 .refillGreedy(registerCapacity, Duration.ofMinutes(registerWindowMinutes))
+                .build();
+        return Bucket.builder().addLimit(limit).build();
+    }
+
+    private Bucket createBookingBucket(String ip) {
+        Bandwidth limit = Bandwidth.builder()
+                .capacity(bookingCapacity)
+                .refillGreedy(bookingCapacity, Duration.ofMinutes(bookingWindowMinutes))
+                .build();
+        return Bucket.builder().addLimit(limit).build();
+    }
+
+    private Bucket createWhatsappBucket(String ip) {
+        Bandwidth limit = Bandwidth.builder()
+                .capacity(whatsappCapacity)
+                .refillGreedy(whatsappCapacity, Duration.ofMinutes(whatsappWindowMinutes))
                 .build();
         return Bucket.builder().addLimit(limit).build();
     }

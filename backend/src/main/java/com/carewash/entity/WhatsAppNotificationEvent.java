@@ -97,3 +97,7 @@ public class WhatsAppNotificationEvent {
     public LocalDateTime getLastAttemptAt() { return lastAttemptAt; }
     public void setLastAttemptAt(LocalDateTime lastAttemptAt) { this.lastAttemptAt = lastAttemptAt; }
 }
+
+
+
+

@@ -17,10 +17,14 @@ public interface WhatsAppMessageRepository extends JpaRepository<WhatsAppMessage
     Optional<WhatsAppMessage> findByMessageId(String messageId);
     boolean existsByMessageId(String messageId);
 
-    List<WhatsAppMessage> findByConversationIdOrderByCreatedAtAsc(Long conversationId);
+    List<WhatsAppMessage> findTop50ByConversationIdOrderByCreatedAtDesc(Long conversationId);
 
     long countByDirection(String direction);
 
     @Query("SELECT COUNT(m) FROM WhatsAppMessage m WHERE m.createdAt >= :startDate")
     long countMessagesSince(@Param("startDate") LocalDateTime startDate);
 }
+
+
+
+

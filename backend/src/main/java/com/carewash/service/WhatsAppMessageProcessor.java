@@ -253,6 +253,7 @@ public class WhatsAppMessageProcessor {
 
         StringBuilder sb = new StringBuilder("MotorMate Services 🚗\n");
         int index = 1;
+        services.sort(java.util.Comparator.comparing(com.carewash.entity.Service::getId));
         for (com.carewash.entity.Service service : services) {
             sb.append(index++).append(". ").append(service.getName()).append(" - ₹").append(service.getPrice()).append("\n");
         }
@@ -267,6 +268,7 @@ public class WhatsAppMessageProcessor {
             int index = Integer.parseInt(text) - 1;
             List<com.carewash.entity.Service> services = serviceRepository.findAll();
             services.removeIf(s -> !s.getActive());
+            services.sort(java.util.Comparator.comparing(com.carewash.entity.Service::getId));
             
             if (index >= 0 && index < services.size()) {
                 com.carewash.entity.Service service = services.get(index);
@@ -295,6 +297,7 @@ public class WhatsAppMessageProcessor {
 
         StringBuilder sb = new StringBuilder("Select a service to book 🚗\n");
         int index = 1;
+        services.sort(java.util.Comparator.comparing(com.carewash.entity.Service::getId));
         for (com.carewash.entity.Service service : services) {
             sb.append(index++).append(". ").append(service.getName()).append(" (₹").append(service.getPrice()).append(")\n");
         }
@@ -309,6 +312,7 @@ public class WhatsAppMessageProcessor {
             int index = Integer.parseInt(text) - 1;
             List<com.carewash.entity.Service> services = serviceRepository.findAll();
             services.removeIf(s -> !s.getActive());
+            services.sort(java.util.Comparator.comparing(com.carewash.entity.Service::getId));
 
             if (index >= 0 && index < services.size()) {
                 com.carewash.entity.Service service = services.get(index);
@@ -325,6 +329,7 @@ public class WhatsAppMessageProcessor {
 
     private void showVehiclesForBooking(WhatsAppConversation conversation) {
         List<Vehicle> vehicles = vehicleRepository.findByUserId(conversation.getUserId());
+        vehicles.sort(java.util.Comparator.comparing(Vehicle::getId));
         if (vehicles.isEmpty()) {
             sendAndSaveResponse(conversation, "No vehicle is registered on your MotorMate account.\nPlease add a vehicle here:\nhttps://motomate-app.netlify.app\n\nAfter adding your vehicle, return to WhatsApp and send MENU.");
             updateState(conversation, WhatsAppConversationState.MAIN_MENU);
@@ -346,6 +351,7 @@ public class WhatsAppMessageProcessor {
         try {
             int index = Integer.parseInt(text) - 1;
             List<Vehicle> vehicles = vehicleRepository.findByUserId(conversation.getUserId());
+            vehicles.sort(java.util.Comparator.comparing(Vehicle::getId));
 
             if (index >= 0 && index < vehicles.size()) {
                 Vehicle vehicle = vehicles.get(index);
@@ -362,6 +368,7 @@ public class WhatsAppMessageProcessor {
 
     private void showAddressesForBooking(WhatsAppConversation conversation) {
         List<Address> addresses = addressRepository.findByUserId(conversation.getUserId());
+        addresses.sort(java.util.Comparator.comparing(Address::getId));
         if (addresses.isEmpty()) {
             sendAndSaveResponse(conversation, "No service address is available on your account.\nPlease add an address on MotorMate:\nhttps://motomate-app.netlify.app\n\nAfter adding, type MENU to return.");
             updateState(conversation, WhatsAppConversationState.MAIN_MENU);
@@ -383,6 +390,7 @@ public class WhatsAppMessageProcessor {
         try {
             int index = Integer.parseInt(text) - 1;
             List<Address> addresses = addressRepository.findByUserId(conversation.getUserId());
+            addresses.sort(java.util.Comparator.comparing(Address::getId));
 
             if (index >= 0 && index < addresses.size()) {
                 Address address = addresses.get(index);
@@ -659,6 +667,7 @@ public class WhatsAppMessageProcessor {
 
     private void showSubscriptionPlans(WhatsAppConversation conversation) {
         List<SubscriptionPlan> plans = planRepository.findByActiveTrue();
+        plans.sort(java.util.Comparator.comparing(SubscriptionPlan::getId));
         if (plans.isEmpty()) {
             sendAndSaveResponse(conversation, "No subscription plans are currently available.\nType MENU to return.");
             updateState(conversation, WhatsAppConversationState.MAIN_MENU);
@@ -692,3 +701,7 @@ public class WhatsAppMessageProcessor {
         conversationService.saveOutgoingMessage(conversation.getId(), responseText, WhatsAppMessageStatus.SENT);
     }
 }
+
+
+
+

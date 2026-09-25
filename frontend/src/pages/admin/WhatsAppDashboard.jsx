@@ -10,7 +10,15 @@ const WhatsAppDashboard = () => {
   const [status, setStatus] = useState(null);
   const [stats, setStats] = useState(null);
   const [conversations, setConversations] = useState([]);
+  const [conversationsPage, setConversationsPage] = useState(0);
+  const [conversationsTotalPages, setConversationsTotalPages] = useState(1);
+
   const [notifications, setNotifications] = useState([]);
+  const [notificationsPage, setNotificationsPage] = useState(0);
+  const [notificationsTotalPages, setNotificationsTotalPages] = useState(1);
+  
+  const [notifStatusFilter, setNotifStatusFilter] = useState('');
+  const [notifEventFilter, setNotifEventFilter] = useState('');
   
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [conversationDetail, setConversationDetail] = useState(null);
@@ -26,17 +34,31 @@ const WhatsAppDashboard = () => {
     setLoading(true);
     setError(null);
     try {
-      const [statusData, statsData, convsData, notifsData] = await Promise.all([
+      const results = await Promise.allSettled([
         whatsappAdminService.getStatus(),
         whatsappAdminService.getStatistics(),
-        whatsappAdminService.getConversations(),
-        whatsappAdminService.getNotifications()
+        whatsappAdminService.getConversations(conversationsPage),
+        whatsappAdminService.getNotifications(notificationsPage)
       ]);
       
-      setStatus(statusData);
-      setStats(statsData);
-      setConversations(convsData.content || []);
-      setNotifications(notifsData.content || []);
+      setStatus(results[0].status === 'fulfilled' ? results[0].value : null);
+      setStats(results[1].status === 'fulfilled' ? results[1].value : null);
+      if (results[2].status === 'fulfilled') {
+        setConversations(results[2].value.content || []);
+        setConversationsTotalPages(results[2].value.totalPages || 1);
+      } else {
+        setConversations([]);
+      }
+      if (results[3].status === 'fulfilled') {
+        setNotifications(results[3].value.content || []);
+        setNotificationsTotalPages(results[3].value.totalPages || 1);
+      } else {
+        setNotifications([]);
+      }
+      
+      if (results.every(r => r.status === 'rejected')) {
+        setError('Failed to load WhatsApp dashboard data.');
+      }
     } catch (err) {
       console.error(err);
       setError('Failed to load WhatsApp dashboard data.');
@@ -45,13 +67,47 @@ const WhatsAppDashboard = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchConvs = async () => {
+      try {
+        const data = await whatsappAdminService.getConversations(conversationsPage);
+        setConversations(data.content || []);
+        setConversationsTotalPages(data.totalPages || 1);
+      } catch (err) {
+        console.error("Failed to load more conversations");
+      }
+    };
+    if (!loading) fetchConvs();
+  }, [conversationsPage]);
+
+  useEffect(() => {
+    const fetchNotifs = async () => {
+      try {
+        const data = await whatsappAdminService.getNotifications(notificationsPage);
+        setNotifications(data.content || []);
+        setNotificationsTotalPages(data.totalPages || 1);
+      } catch (err) {
+        console.error("Failed to load more notifications");
+      }
+    };
+    if (!loading) fetchNotifs();
+  }, [notificationsPage]);
+
+  const [detailError, setDetailError] = useState(null);
+
   const handleSelectConversation = async (conv) => {
     setSelectedConversation(conv);
+    setConversationDetail(null);
+    setDetailError(null);
     try {
       const detail = await whatsappAdminService.getConversationDetail(conv.id);
-      setConversationDetail(detail);
+      setConversationDetail(prev => {
+        // Prevent race conditions by checking if the user hasn't selected another conversation
+        return detail.conversation.id === conv.id ? detail : prev;
+      });
     } catch (err) {
       console.error("Failed to load conversation details");
+      setDetailError("Failed to load conversation details.");
     }
   };
 
@@ -233,22 +289,21 @@ const WhatsAppDashboard = () => {
       {activeTab === 'conversations' && (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex h-[600px] flex-col lg:flex-row">
           <div className="w-full lg:w-1/3 border-r border-slate-200 flex flex-col">
-            <div className="p-4 border-b border-slate-200 bg-slate-50">
-              <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
-                <input 
-                  type="text" 
-                  placeholder="Search conversations..." 
-                  className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                />
-              </div>
-            </div>
+            {/* Search removed as not supported by backend */}
             <div className="flex-1 overflow-y-auto">
               {conversations.map(conv => (
                 <div 
                   key={conv.id} 
+                  role="button"
+                  tabIndex={0}
                   onClick={() => handleSelectConversation(conv)}
-                  className={`p-4 border-b border-slate-100 cursor-pointer transition-colors ${selectedConversation?.id === conv.id ? 'bg-blue-50' : 'hover:bg-slate-50'}`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleSelectConversation(conv);
+                    }
+                  }}
+                  className={`p-4 border-b border-slate-100 cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 ${selectedConversation?.id === conv.id ? 'bg-blue-50' : 'hover:bg-slate-50'}`}
                 >
                   <div className="flex justify-between items-start mb-1">
                     <span className="font-semibold text-slate-800">{conv.customerName}</span>
@@ -269,11 +324,31 @@ const WhatsAppDashboard = () => {
               {conversations.length === 0 && (
                 <div className="p-8 text-center text-slate-500">No conversations found.</div>
               )}
+              {conversations.length > 0 && (
+                <div className="p-4 border-t border-slate-200 flex justify-between items-center text-sm text-slate-500 bg-white sticky bottom-0">
+                  <button 
+                    onClick={() => setConversationsPage(p => Math.max(0, p - 1))}
+                    disabled={conversationsPage === 0}
+                    className="px-3 py-1 border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50"
+                  >Prev</button>
+                  <span>Page {conversationsPage + 1} of {conversationsTotalPages}</span>
+                  <button 
+                    onClick={() => setConversationsPage(p => Math.min(conversationsTotalPages - 1, p + 1))}
+                    disabled={conversationsPage >= conversationsTotalPages - 1}
+                    className="px-3 py-1 border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50"
+                  >Next</button>
+                </div>
+              )}
             </div>
           </div>
           
           <div className="w-full lg:w-2/3 flex flex-col bg-slate-50">
-            {selectedConversation ? (
+            {detailError ? (
+              <div className="flex-1 flex flex-col items-center justify-center text-red-500 p-8">
+                <AlertCircle className="w-16 h-16 mb-4 text-red-400" />
+                <p>{detailError}</p>
+              </div>
+            ) : selectedConversation ? (
               <>
                 <div className="p-4 border-b border-slate-200 bg-white flex justify-between items-center shadow-sm z-10">
                   <div>
@@ -315,14 +390,22 @@ const WhatsAppDashboard = () => {
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center flex-wrap gap-4">
             <div className="flex space-x-2">
-              <select className="border border-slate-300 rounded-md text-sm py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+              <select 
+                value={notifStatusFilter}
+                onChange={(e) => setNotifStatusFilter(e.target.value)}
+                className="border border-slate-300 rounded-md text-sm py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              >
                 <option value="">All Statuses</option>
                 <option value="SENT">Sent</option>
                 <option value="FAILED">Failed</option>
                 <option value="RETRYING">Retrying</option>
                 <option value="PENDING">Pending</option>
               </select>
-              <select className="border border-slate-300 rounded-md text-sm py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+              <select 
+                value={notifEventFilter}
+                onChange={(e) => setNotifEventFilter(e.target.value)}
+                className="border border-slate-300 rounded-md text-sm py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              >
                 <option value="">All Event Types</option>
                 <option value="BOOKING_CREATED">Booking Created</option>
                 <option value="BOOKING_CONFIRMED">Booking Confirmed</option>
@@ -343,7 +426,10 @@ const WhatsAppDashboard = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {notifications.map(notif => (
+                {notifications
+                  .filter(n => (notifStatusFilter ? n.status === notifStatusFilter : true))
+                  .filter(n => (notifEventFilter ? n.eventType === notifEventFilter : true))
+                  .map(notif => (
                   <tr key={notif.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4 font-medium text-slate-900">#{notif.bookingId}</td>
                     <td className="px-6 py-4 text-slate-600">{notif.eventType}</td>
@@ -370,10 +456,18 @@ const WhatsAppDashboard = () => {
             </table>
           </div>
           <div className="p-4 border-t border-slate-200 flex justify-between items-center text-sm text-slate-500">
-            <span>Showing {notifications.length} results</span>
+            <span>Showing filtered results (Page {notificationsPage + 1} of {notificationsTotalPages})</span>
             <div className="flex space-x-2">
-              <button className="px-3 py-1 border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50">Previous</button>
-              <button className="px-3 py-1 border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50">Next</button>
+              <button 
+                onClick={() => setNotificationsPage(p => Math.max(0, p - 1))}
+                disabled={notificationsPage === 0}
+                className="px-3 py-1 border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50"
+              >Previous</button>
+              <button 
+                onClick={() => setNotificationsPage(p => Math.min(notificationsTotalPages - 1, p + 1))}
+                disabled={notificationsPage >= notificationsTotalPages - 1}
+                className="px-3 py-1 border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50"
+              >Next</button>
             </div>
           </div>
         </div>

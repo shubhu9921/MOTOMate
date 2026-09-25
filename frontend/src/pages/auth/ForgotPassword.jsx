@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Car, Mail } from 'lucide-react';
+import { VALIDATION_RULES, validateField } from '../../utils/validation';
 import api from '../../services/api';
 
 const ForgotPassword = () => {
@@ -11,8 +12,10 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email) {
-      setError('Please enter your email');
+    
+    let errorMsg = validateField(email, { ...VALIDATION_RULES.EMAIL, required: true }, "Email");
+    if (errorMsg) {
+      setError(errorMsg);
       return;
     }
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, MessageSquare, Send } from 'lucide-react';
 import Footer from '../components/Footer';
+import { VALIDATION_RULES, validateField } from '../utils/validation';
 import api from '../services/api';
 
 const Contact = () => {
@@ -10,6 +11,17 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus({ loading: true, success: false, error: '' });
+    
+    let errorMsg = validateField(formData.name, { ...VALIDATION_RULES.NAME, required: true }, "Name")
+      || validateField(formData.email, { ...VALIDATION_RULES.EMAIL, required: true }, "Email")
+      || (formData.phone && validateField(formData.phone, VALIDATION_RULES.PHONE, "Phone"))
+      || validateField(formData.subject, { required: true, maxLength: 200 }, "Subject")
+      || validateField(formData.message, { required: true, maxLength: 2000 }, "Message");
+      
+    if (errorMsg) {
+      setStatus({ loading: false, success: false, error: errorMsg });
+      return;
+    }
 
     try {
       const response = await api.post('/contact', formData);

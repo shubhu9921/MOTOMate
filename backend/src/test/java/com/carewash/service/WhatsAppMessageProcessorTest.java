@@ -157,3 +157,4 @@ public class WhatsAppMessageProcessorTest {
         verify(conversationService).saveOutgoingMessage(eq(1L), contains("MotorMate Menu"), eq(com.carewash.entity.WhatsAppMessageStatus.SENT));
     }
 }
+

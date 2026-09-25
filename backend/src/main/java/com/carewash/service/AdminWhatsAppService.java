@@ -15,11 +15,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.carewash.repository.UserRepository;
+import com.carewash.repository.WhatsAppConversationRepository;
+
 @Service
 public class AdminWhatsAppService {
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private WhatsAppConversationRepository conversationRepository;
@@ -61,7 +68,8 @@ public class AdminWhatsAppService {
         WhatsAppConversation conversation = conversationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Conversation not found"));
         
-        List<WhatsAppMessage> messages = messageRepository.findByConversationIdOrderByCreatedAtAsc(id);
+        List<WhatsAppMessage> messages = messageRepository.findTop50ByConversationIdOrderByCreatedAtDesc(id);
+        Collections.reverse(messages); // Show oldest first in the UI, but bounded to 50 latest
 
         ConversationDetailDto detail = new ConversationDetailDto();
         detail.setConversation(mapToConversationDto(conversation));
@@ -93,7 +101,11 @@ public class AdminWhatsAppService {
         dto.setId(entity.getId());
         dto.setMaskedPhoneNumber(entity.getPhoneNumber());
         dto.setState(entity.getCurrentState() != null ? entity.getCurrentState().name() : null);
-        dto.setCustomerName("Customer"); // Basic implementation without heavy join
+        if (entity.getUserId() != null) {
+            userRepository.findById(entity.getUserId()).ifPresent(user -> dto.setCustomerName(user.getName()));
+        } else {
+            dto.setCustomerName("Customer");
+        }
         dto.setLastMessageAt(entity.getUpdatedAt());
         dto.setActive(entity.getCurrentState() != com.carewash.entity.WhatsAppConversationState.COMPLETED);
         return dto;
@@ -122,3 +134,7 @@ public class AdminWhatsAppService {
         return dto;
     }
 }
+
+
+
+

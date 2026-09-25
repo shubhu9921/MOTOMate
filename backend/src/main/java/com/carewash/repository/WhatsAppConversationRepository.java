@@ -15,3 +15,7 @@ public interface WhatsAppConversationRepository extends JpaRepository<WhatsAppCo
     @Query("SELECT COUNT(c) FROM WhatsAppConversation c WHERE c.currentState != com.carewash.entity.WhatsAppConversationState.COMPLETED")
     long countActiveConversations();
 }
+
+
+
+

@@ -7,3 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WhatsAppMessageLogRepository extends JpaRepository<WhatsAppMessageLog, String> {
 }
+
+
+
+

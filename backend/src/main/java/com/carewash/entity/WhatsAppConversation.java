@@ -122,3 +122,7 @@ public class WhatsAppConversation {
     public LocalTime getSelectedTime() { return selectedTime; }
     public void setSelectedTime(LocalTime selectedTime) { this.selectedTime = selectedTime; }
 }
+
+
+
+

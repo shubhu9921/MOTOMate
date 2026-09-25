@@ -59,3 +59,7 @@ public class WhatsAppStatsDto {
     public long getLast30DaysMessages() { return last30DaysMessages; }
     public void setLast30DaysMessages(long last30DaysMessages) { this.last30DaysMessages = last30DaysMessages; }
 }
+
+
+
+

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -64,7 +65,7 @@ public class SubscriptionPlan {
     private String terms;
 
     @OneToMany(mappedBy = "subscriptionPlan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SubscriptionPlanService> planServices;
+    private List<SubscriptionPlanService> planServices = new ArrayList<>();
 
     @CreationTimestamp
     @Column(updatable = false)

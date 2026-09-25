@@ -155,7 +155,8 @@ public class WhatsAppPhase3Test {
         messageProcessor.processIncomingMessage(msg);
 
         // Should successfully select the vehicle because it was fetched by userId (findByUserId)
-        verify(conversationRepository).save(argThat(c -> c.getSelectedVehicleId().equals(500L) 
+        verify(conversationRepository).save(argThat(c -> Long.valueOf(500L).equals(c.getSelectedVehicleId()) 
             && c.getCurrentState() == WhatsAppConversationState.SELECTING_ADDRESS));
     }
 }
+

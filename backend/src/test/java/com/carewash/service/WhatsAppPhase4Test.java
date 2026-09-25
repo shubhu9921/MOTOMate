@@ -122,3 +122,4 @@ public class WhatsAppPhase4Test {
         verify(eventRepository, atLeastOnce()).save(argThat(evt -> evt.getStatus() == WhatsAppNotificationEventStatus.FAILED && evt.getAttemptCount() == 3));
     }
 }
+

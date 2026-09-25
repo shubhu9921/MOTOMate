@@ -32,7 +32,7 @@ const Testimonials = () => {
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
           <h2 className="text-sm font-bold text-yellow-500 tracking-wide uppercase mb-2">Testimonials</h2>
           <h3 className="text-3xl md:text-4xl font-extrabold text-zinc-50 mb-4">What Our Customers Say</h3>
-          <p className="text-lg text-zinc-400">Don't just take our word for it. Here's what car owners have to say about their MotoMate experience.</p>
+          <p className="text-lg text-zinc-400">Don't just take our word for it. Here's what car owners have to say about their MOTOMate experience.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

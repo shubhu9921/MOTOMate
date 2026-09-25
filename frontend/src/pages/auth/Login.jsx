@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Car, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { VALIDATION_RULES, validateField } from '../../utils/validation';
 import api from '../../services/api';
 
 const images = [
@@ -57,8 +58,12 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError('Please fill in all fields');
+    
+    let errorMsg = validateField(email, { ...VALIDATION_RULES.EMAIL, required: true }, "Email")
+      || validateField(password, { required: true, maxLength: 72 }, "Password"); // Use generic password validation without strict min length for login to avoid leaking rules
+      
+    if (errorMsg) {
+      setError(errorMsg);
       return;
     }
 
@@ -228,7 +233,7 @@ const Login = () => {
                   <div className="w-full border-t border-zinc-800" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-zinc-950 text-zinc-400 font-medium">New to MotoMate?</span>
+                  <span className="px-2 bg-zinc-950 text-zinc-400 font-medium">New to MOTOMate?</span>
                 </div>
               </div>
 

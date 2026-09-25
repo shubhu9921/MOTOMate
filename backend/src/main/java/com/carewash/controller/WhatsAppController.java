@@ -8,6 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.carewash.service.WhatsAppWebhookSignatureService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +24,11 @@ public class WhatsAppController {
 
     @Autowired
     private WhatsAppMessageProcessor whatsAppMessageProcessor;
+
+    @Autowired
+    private WhatsAppWebhookSignatureService signatureService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @GetMapping
     public ResponseEntity<String> verifyWebhook(
@@ -39,11 +48,19 @@ public class WhatsAppController {
     }
 
     @PostMapping
-    public ResponseEntity<String> receiveMessage(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<String> receiveMessage(
+            @RequestHeader(value = "X-Hub-Signature-256", required = false) String signature,
+            @RequestBody byte[] rawPayload) {
         try {
             if (!whatsAppConfig.isEnabled()) {
                 return ResponseEntity.ok("EVENT_RECEIVED");
             }
+
+            if (!signatureService.isValidSignature(rawPayload, signature)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid signature");
+            }
+
+            Map<String, Object> payload = objectMapper.readValue(rawPayload, new TypeReference<Map<String, Object>>() {});
 
             // Extract and normalize data
             List<?> entries = (List<?>) payload.get("entry");
@@ -94,3 +111,6 @@ public class WhatsAppController {
         }
     }
 }
+
+
+
