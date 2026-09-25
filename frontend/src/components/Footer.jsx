@@ -19,7 +19,7 @@ const Footer = () => {
               </p>
             </div>
             <p className="text-xs text-zinc-400">
-              &copy; {new Date().getFullYear()} MOTOMate Technologies. All rights reserved.
+              &copy; {new Date().getFullYear()} REVORA Technologies. All rights reserved.
             </p>
           </div>
 
@@ -51,7 +51,7 @@ const Footer = () => {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start">
                 <MapPin className="w-4 h-4 text-yellow-500 mr-2 mt-0.5 shrink-0" />
-                <span>123 MOTOMate Hub, Tech Park,<br/>Mumbai 400001</span>
+                <span>123 REVORA Hub, Tech Park,<br/>Mumbai 400001</span>
               </li>
               <li className="flex items-center">
                 <Phone className="w-4 h-4 text-yellow-500 mr-2 shrink-0" />
@@ -88,3 +88,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

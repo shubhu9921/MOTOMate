@@ -239,7 +239,7 @@ public class WhatsAppMessageProcessor {
     }
 
     private void sendRegistrationMessage(WhatsAppConversation conversation) {
-        sendAndSaveResponse(conversation, "Your WhatsApp number is not linked to a MotorMate account.\nPlease register first:\nhttps://motomate-app.netlify.app\n\nAfter registration, you can use WhatsApp for MotorMate services.");
+        sendAndSaveResponse(conversation, "Your WhatsApp number is not linked to a MotorMate account.\nPlease register first:\nhttps://REVORA-app.netlify.app\n\nAfter registration, you can use WhatsApp for MotorMate services.");
     }
 
     private void showAllServices(WhatsAppConversation conversation) {
@@ -331,7 +331,7 @@ public class WhatsAppMessageProcessor {
         List<Vehicle> vehicles = vehicleRepository.findByUserId(conversation.getUserId());
         vehicles.sort(java.util.Comparator.comparing(Vehicle::getId));
         if (vehicles.isEmpty()) {
-            sendAndSaveResponse(conversation, "No vehicle is registered on your MotorMate account.\nPlease add a vehicle here:\nhttps://motomate-app.netlify.app\n\nAfter adding your vehicle, return to WhatsApp and send MENU.");
+            sendAndSaveResponse(conversation, "No vehicle is registered on your MotorMate account.\nPlease add a vehicle here:\nhttps://REVORA-app.netlify.app\n\nAfter adding your vehicle, return to WhatsApp and send MENU.");
             updateState(conversation, WhatsAppConversationState.MAIN_MENU);
             return;
         }
@@ -370,7 +370,7 @@ public class WhatsAppMessageProcessor {
         List<Address> addresses = addressRepository.findByUserId(conversation.getUserId());
         addresses.sort(java.util.Comparator.comparing(Address::getId));
         if (addresses.isEmpty()) {
-            sendAndSaveResponse(conversation, "No service address is available on your account.\nPlease add an address on MotorMate:\nhttps://motomate-app.netlify.app\n\nAfter adding, type MENU to return.");
+            sendAndSaveResponse(conversation, "No service address is available on your account.\nPlease add an address on MotorMate:\nhttps://REVORA-app.netlify.app\n\nAfter adding, type MENU to return.");
             updateState(conversation, WhatsAppConversationState.MAIN_MENU);
             return;
         }
@@ -701,6 +701,7 @@ public class WhatsAppMessageProcessor {
         conversationService.saveOutgoingMessage(conversation.getId(), responseText, WhatsAppMessageStatus.SENT);
     }
 }
+
 
 
 

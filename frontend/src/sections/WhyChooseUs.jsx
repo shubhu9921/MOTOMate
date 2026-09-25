@@ -40,10 +40,10 @@ const WhyChooseUs = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
-            <h2 className="text-sm font-bold text-yellow-400 tracking-wide uppercase mb-2">Why Choose MOTOMate</h2>
+            <h2 className="text-sm font-bold text-yellow-400 tracking-wide uppercase mb-2">Why Choose REVORA</h2>
             <h3 className="text-3xl md:text-4xl font-extrabold mb-6">Redefining Car Care with Convenience</h3>
             <p className="text-slate-300 text-lg mb-8 leading-relaxed">
-              We understand that your time is valuable. Driving to a car wash and waiting in line is a hassle of the past. MOTOMate brings the ultimate car cleaning experience directly to your parking spot.
+              We understand that your time is valuable. Driving to a car wash and waiting in line is a hassle of the past. REVORA brings the ultimate car cleaning experience directly to your parking spot.
             </p>
             
             <div className="bg-white/10 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
@@ -80,3 +80,4 @@ const WhyChooseUs = () => {
 };
 
 export default WhyChooseUs;
+

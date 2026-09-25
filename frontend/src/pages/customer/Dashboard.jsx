@@ -254,7 +254,7 @@ const Dashboard = () => {
                   <div className="absolute inset-0 bg-gradient-to-r from-green-900/90 via-green-900/70 to-transparent"></div>
                   <div className="relative z-10 w-2/3">
                     <h3 className="text-zinc-50 font-bold text-lg leading-tight mb-2">Get 20% Off<br/>on Your First Wash</h3>
-                    <p className="text-green-100 text-xs font-medium">Use code <span className="font-bold text-zinc-50 bg-green-800/50 px-1 py-0.5 rounded">MOTOMATE20</span></p>
+                    <p className="text-green-100 text-xs font-medium">Use code <span className="font-bold text-zinc-50 bg-green-800/50 px-1 py-0.5 rounded">REVORA20</span></p>
                   </div>
                   <button className="absolute bottom-4 right-4 z-10 bg-white/20 hover:bg-white/30 text-zinc-50 rounded-full w-8 h-8 flex items-center justify-center shadow-sm backdrop-blur-sm transition-colors">
                     <ChevronRight className="w-4 h-4" />
@@ -280,3 +280,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

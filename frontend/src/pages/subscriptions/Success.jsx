@@ -17,7 +17,7 @@ const Success = () => {
         
         <h2 className="text-3xl font-bold text-white mb-2">Subscription Activated!</h2>
         <p className="text-slate-400 mb-8">
-          Welcome to MOTOMate premium. Your unlimited shine awaits.
+          Welcome to REVORA premium. Your unlimited shine awaits.
         </p>
         
         <div className="space-y-4">
@@ -40,3 +40,4 @@ const Success = () => {
 };
 
 export default Success;
+

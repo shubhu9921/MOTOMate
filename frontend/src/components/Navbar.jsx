@@ -90,8 +90,7 @@ const Navbar = ({ isTransparent = false }) => {
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2">
-              <Car className={`h-8 w-8 ${isTransparent ? 'text-white' : 'text-teal-400'}`} />
-              <span className="font-bold text-2xl tracking-tight text-white">MOTO<span className="text-teal-400">Mate</span></span>
+              <img src="/revora-logo.png" alt="REVORA" className="h-10" />
             </Link>
           </div>
           
@@ -232,8 +231,7 @@ const MobileMenu = ({ isOpen, setIsOpen, isAuthenticated, currentUser, logout })
       >
         <div className="p-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-900">
           <Link to="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
-            <Car className="h-7 w-7 text-yellow-500" />
-            <span className="font-bold text-xl tracking-tight text-zinc-50">MOTO<span className="text-yellow-500">MATE</span></span>
+            <img src="/revora-logo.png" alt="REVORA" className="h-8" />
           </Link>
           <button onClick={() => setIsOpen(false)} className="p-2 text-zinc-400 hover:text-slate-900 bg-zinc-950 rounded-full shadow-sm border border-zinc-800">
             <X className="h-5 w-5" />

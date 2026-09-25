@@ -148,8 +148,7 @@ const Login = () => {
           
           <div className="bg-zinc-950 px-8 py-8 shadow-xl shadow-slate-200/50 rounded-2xl border border-zinc-800">
             <Link to="/" className="flex items-center justify-center gap-2 mb-6 group w-fit mx-auto">
-              <Car className="h-8 w-8 text-yellow-500 lg:hidden group-hover:scale-110 transition-transform" />
-              <span className="font-bold text-2xl tracking-tight text-zinc-50 lg:hidden group-hover:text-blue-600 transition-colors">MOTO<span className="text-yellow-500">MATE</span></span>
+              <img src="/revora-logo.png" alt="REVORA" className="h-10 lg:hidden" />
             </Link>
             
             <h2 className="text-3xl font-extrabold text-zinc-50 text-center">Welcome Back</h2>
@@ -233,7 +232,7 @@ const Login = () => {
                   <div className="w-full border-t border-zinc-800" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-zinc-950 text-zinc-400 font-medium">New to MOTOMate?</span>
+                  <span className="px-2 bg-zinc-950 text-zinc-400 font-medium">New to REVORA?</span>
                 </div>
               </div>
 
@@ -254,3 +253,4 @@ const Login = () => {
 };
 
 export default Login;
+

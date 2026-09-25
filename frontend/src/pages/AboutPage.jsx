@@ -6,11 +6,11 @@ const AboutPage = () => {
   return (
     <div className="bg-zinc-900 flex flex-col font-sans">
       <main className=" py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-zinc-50 mb-8 text-center">About MOTOMate</h1>
+        <h1 className="text-4xl md:text-5xl font-extrabold text-zinc-50 mb-8 text-center">About REVORA</h1>
         
         <div className="prose prose-lg prose-blue mx-auto text-zinc-400">
           <p className="mb-6">
-            MOTOMate (formerly CareWash) was founded with a simple vision: to revolutionize the way people maintain their vehicles by bringing premium car care services directly to their doorstep.
+            REVORA (formerly CareWash) was founded with a simple vision: to revolutionize the way people maintain their vehicles by bringing premium car care services directly to their doorstep.
           </p>
           
           <h2 className="text-2xl font-bold text-zinc-50 mt-10 mb-4">Our Mission</h2>
@@ -27,7 +27,7 @@ const AboutPage = () => {
 
           <h2 className="text-2xl font-bold text-zinc-50 mt-10 mb-4">The Future Vision</h2>
           <p className="mb-6">
-            While we are starting with doorstep car washing, our architecture and vision are designed to expand. Soon, MOTOMate will offer a complete suite of automobile services including:
+            While we are starting with doorstep car washing, our architecture and vision are designed to expand. Soon, REVORA will offer a complete suite of automobile services including:
           </p>
           <ul className="grid grid-cols-2 gap-2 font-medium text-zinc-300 mb-10 bg-zinc-800 p-6 rounded-xl">
             <li>• Premium Detailing</li>
@@ -51,3 +51,4 @@ const AboutPage = () => {
 };
 
 export default AboutPage;
+

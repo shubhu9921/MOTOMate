@@ -48,7 +48,7 @@ const Register = () => {
     setError('');
 
     try {
-      const response = await api.post('/auth/send-otp', { phone: formData.phone });
+      const response = await api.post('/auth/send-otp', { email: formData.email });
       if (response.data.success) {
         setStep(2);
       } else {
@@ -111,7 +111,7 @@ const Register = () => {
         
         <div className="relative z-10 p-12 text-center text-zinc-50 max-w-lg animate-fade-in-up">
           <Car className="h-16 w-16 mx-auto mb-6 text-yellow-400 animate-bounce" />
-          <h1 className="text-4xl font-bold mb-4 drop-shadow-lg">Join MOTOMate</h1>
+          <h1 className="text-4xl font-bold mb-4 drop-shadow-lg">Join REVORA</h1>
           <p className="text-lg text-slate-200 drop-shadow">
             Create an account to book top-tier detailing and washing services from the palm of your hand.
           </p>
@@ -128,13 +128,12 @@ const Register = () => {
           
           <div className="bg-zinc-950 px-8 py-8 shadow-xl shadow-slate-200/50 rounded-2xl border border-zinc-800">
             <Link to="/" className="flex items-center justify-center gap-2 mb-6 group w-fit mx-auto">
-              <Car className="h-8 w-8 text-yellow-500 lg:hidden group-hover:scale-110 transition-transform" />
-              <span className="font-bold text-2xl tracking-tight text-zinc-50 lg:hidden group-hover:text-blue-600 transition-colors">MOTO<span className="text-yellow-500">MATE</span></span>
+              <img src="/revora-logo.png" alt="REVORA" className="h-10 lg:hidden" />
             </Link>
             
             <h2 className="text-3xl font-extrabold text-zinc-50 text-center">Create Account</h2>
             <p className="mt-1 text-sm text-zinc-400 text-center mb-6">
-              Join MOTOMate today
+              Join REVORA today
             </p>
 
             <form className="space-y-3" onSubmit={handleSubmit}>
@@ -256,7 +255,7 @@ const Register = () => {
               ) : (
               <>
               <div>
-                <label className="block text-sm font-medium text-zinc-300">Enter OTP sent to {formData.phone}</label>
+                <label className="block text-sm font-medium text-zinc-300">Enter OTP sent to {formData.email}</label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <input
                     type="text"

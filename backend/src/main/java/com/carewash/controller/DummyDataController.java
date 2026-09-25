@@ -70,7 +70,7 @@ public class DummyDataController {
         );
         createDummyProvider(
             "Suresh Tech", 
-            "suresh.tech@motomate.com", 
+            "suresh.tech@REVORA.com", 
             "9876543214", 
             "TECH001",
             19.085, 
@@ -117,3 +117,4 @@ public class DummyDataController {
         }
     }
 }
+

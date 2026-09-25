@@ -34,7 +34,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> registerUser(@Valid @RequestBody RegisterRequest signUpRequest) {
-        if (!otpService.validateOtp(signUpRequest.getPhone(), signUpRequest.getOtp())) {
+        if (!otpService.validateOtp(signUpRequest.getEmail(), signUpRequest.getOtp())) {
             throw new BadRequestException("Invalid or expired OTP");
         }
         
@@ -48,11 +48,11 @@ public class AuthController {
 
     @PostMapping("/send-otp")
     public ResponseEntity<ApiResponse<Void>> sendOtp(@RequestBody java.util.Map<String, String> request) {
-        String phone = request.get("phone");
-        if (phone == null || phone.isEmpty()) {
-            throw new BadRequestException("Phone number is required");
+        String email = request.get("email");
+        if (email == null || email.isEmpty()) {
+            throw new BadRequestException("Email is required");
         }
-        otpService.generateAndSendOtp(phone);
+        otpService.generateAndSendOtp(email);
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .success(true)
                 .message("OTP sent successfully")

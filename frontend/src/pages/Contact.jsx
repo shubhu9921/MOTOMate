@@ -66,7 +66,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-zinc-50">Email</h3>
-                  <p className="text-zinc-400 mt-1">support@motomate.com</p>
+                  <p className="text-zinc-400 mt-1">support@REVORA.com</p>
                   <p className="text-sm text-zinc-400 mt-1">We'll respond within 24 hours</p>
                 </div>
               </div>
@@ -135,3 +135,4 @@ const Contact = () => {
 };
 
 export default Contact;
+

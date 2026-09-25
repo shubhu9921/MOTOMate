@@ -2,10 +2,10 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 const SEO = ({ title, description, url, image, type = 'website' }) => {
-  const siteTitle = 'MOTOMate';
-  const fullTitle = title ? `${title} | MOTOMate` : siteTitle;
+  const siteTitle = 'REVORA';
+  const fullTitle = title ? `${title} | REVORA` : siteTitle;
   
-  const siteDescription = description || 'Book convenient car wash and car care services with MOTOMate. Choose your service, vehicle, location and preferred time.';
+  const siteDescription = description || 'Book convenient car wash and car care services with REVORA. Choose your service, vehicle, location and preferred time.';
   
   return (
     <Helmet>
@@ -32,3 +32,4 @@ const SEO = ({ title, description, url, image, type = 'website' }) => {
 };
 
 export default SEO;
+

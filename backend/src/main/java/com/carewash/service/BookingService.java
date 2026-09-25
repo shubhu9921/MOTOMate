@@ -276,7 +276,7 @@ public class BookingService {
                 break;
             case COMPLETED:
                 notificationService.createNotification(booking.getUser(), "Service Completed", 
-                    "Your service is complete. Thank you for using MotoMate!", NotificationType.SERVICE_COMPLETED);
+                    "Your service is complete. Thank you for using REVORA!", NotificationType.SERVICE_COMPLETED);
                 eventPublisher.publishEvent(new BookingNotificationEvent(this, booking, NotificationType.SERVICE_COMPLETED));
                 break;
             default:
@@ -356,3 +356,4 @@ public class BookingService {
         return dto;
     }
 }
+

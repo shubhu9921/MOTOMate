@@ -8,28 +8,28 @@ import java.util.Random;
 @Service
 public class OtpService {
     
-    // Simple in-memory cache for OTPs: Phone -> OTP
+    // Simple in-memory cache for OTPs: Email -> OTP
     // Note: In production, use Redis or a DB table with expiration
     private final Map<String, String> otpCache = new ConcurrentHashMap<>();
     
-    public void generateAndSendOtp(String phone) {
+    public void generateAndSendOtp(String email) {
         String otp = String.format("%06d", new Random().nextInt(999999));
-        otpCache.put(phone, otp);
+        otpCache.put(email, otp);
         
-        // Simulating SMS sending
+        // Simulating Email sending
         System.out.println("=========================================");
-        System.out.println("MOCK SMS SERVICE: Sending OTP to " + phone);
-        System.out.println("Your MotorMate Verification Code is: " + otp);
+        System.out.println("MOCK EMAIL SERVICE: Sending OTP to " + email);
+        System.out.println("Your REVORA Verification Code is: " + otp);
         System.out.println("=========================================");
     }
     
-    public boolean validateOtp(String phone, String otp) {
-        if (phone == null || otp == null) {
+    public boolean validateOtp(String email, String otp) {
+        if (email == null || otp == null) {
             return false;
         }
-        String storedOtp = otpCache.get(phone);
+        String storedOtp = otpCache.get(email);
         if (storedOtp != null && storedOtp.equals(otp)) {
-            otpCache.remove(phone); // Consume the OTP
+            otpCache.remove(email); // Consume the OTP
             return true;
         }
         return false;

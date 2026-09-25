@@ -26,10 +26,10 @@ public class DataSeeder {
     @Bean
     public CommandLineRunner initData() {
         return args -> {
-            if (!userRepository.existsByEmail("admin@motomate.com")) {
+            if (!userRepository.existsByEmail("admin@REVORA.com")) {
                 User admin = User.builder()
                         .name("Admin User")
-                        .email("admin@motomate.com")
+                        .email("admin@REVORA.com")
                         .password(passwordEncoder.encode("admin123"))
                         .role(Role.ADMIN)
                         .phone("0000000000")
@@ -37,10 +37,10 @@ public class DataSeeder {
                 userRepository.save(admin);
             }
 
-            if (!userRepository.existsByEmail("technician@motomate.com")) {
+            if (!userRepository.existsByEmail("technician@REVORA.com")) {
                 User tech = User.builder()
                         .name("Ravi Technician")
-                        .email("technician@motomate.com")
+                        .email("technician@REVORA.com")
                         .password(passwordEncoder.encode("tech123"))
                         .role(Role.SERVICE_PROVIDER)
                         .phone("1111111111")
@@ -48,10 +48,10 @@ public class DataSeeder {
                 userRepository.save(tech);
             }
 
-            if (!userRepository.existsByEmail("pickup@motomate.com")) {
+            if (!userRepository.existsByEmail("pickup@REVORA.com")) {
                 User pickup = User.builder()
                         .name("Arjun Logistics")
-                        .email("pickup@motomate.com")
+                        .email("pickup@REVORA.com")
                         .password(passwordEncoder.encode("pickup123"))
                         .role(Role.OPERATIONS_MANAGER)
                         .phone("2222222222")
@@ -100,3 +100,4 @@ public class DataSeeder {
         };
     }
 }
+

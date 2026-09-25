@@ -315,7 +315,7 @@ const BookingDetails = () => {
         {booking.status === 'COMPLETED' && !reviewSubmitted && (
           <div className="bg-zinc-950 rounded-2xl shadow-sm border border-zinc-800 overflow-hidden p-6 md:p-8">
             <h2 className="text-2xl font-bold text-zinc-50 mb-2">Rate Your Service</h2>
-            <p className="text-zinc-400 mb-6">How was your experience with MOTOMate? Your feedback helps us improve.</p>
+            <p className="text-zinc-400 mb-6">How was your experience with REVORA? Your feedback helps us improve.</p>
             
             <form onSubmit={submitReview}>
               <div className="mb-6 flex gap-2">
@@ -377,3 +377,4 @@ const BookingDetails = () => {
 };
 
 export default BookingDetails;
+
