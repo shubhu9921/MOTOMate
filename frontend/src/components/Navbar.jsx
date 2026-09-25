@@ -3,6 +3,7 @@ import { Menu, X, Car, UserCircle, LogOut, ChevronDown, Bell } from 'lucide-reac
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import RevoraLogo from '../assets/Revora.png';
 
 const Navbar = ({ isTransparent = false }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -90,7 +91,7 @@ const Navbar = ({ isTransparent = false }) => {
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2">
-              <img src="/revora-logo.png" alt="REVORA" className="h-10" />
+              <img src={RevoraLogo} alt="REVORA" className="h-10" />
             </Link>
           </div>
           
@@ -231,7 +232,7 @@ const MobileMenu = ({ isOpen, setIsOpen, isAuthenticated, currentUser, logout })
       >
         <div className="p-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-900">
           <Link to="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
-            <img src="/revora-logo.png" alt="REVORA" className="h-8" />
+            <img src={RevoraLogo} alt="REVORA" className="h-8" />
           </Link>
           <button onClick={() => setIsOpen(false)} className="p-2 text-zinc-400 hover:text-slate-900 bg-zinc-950 rounded-full shadow-sm border border-zinc-800">
             <X className="h-5 w-5" />
