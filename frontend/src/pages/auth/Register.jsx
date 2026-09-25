@@ -75,12 +75,24 @@ const Register = () => {
     setError('');
 
     try {
+      // First verify the OTP
+      const verifyResponse = await api.post('/auth/verify-registration-otp', {
+        email: formData.email,
+        otp: formData.otp
+      });
+
+      if (!verifyResponse.data.success) {
+        setError(verifyResponse.data.message || 'OTP verification failed');
+        setLoading(false);
+        return;
+      }
+
+      // Then complete registration
       const response = await api.post('/auth/register', {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        password: formData.password,
-        otp: formData.otp
+        password: formData.password
       });
 
       if (response.data.success) {

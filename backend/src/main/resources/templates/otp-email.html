@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}">Verify Your Email</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f5; margin: 0; padding: 20px; color: #18181b; }
+        .container { max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #18181b; margin: 0; font-size: 24px; letter-spacing: -0.5px; }
+        .header p { color: #71717a; margin: 5px 0 0; font-size: 14px; }
+        .content { text-align: center; }
+        .otp-box { background: #fef3c7; color: #d97706; padding: 15px 30px; border-radius: 6px; font-size: 32px; font-weight: bold; letter-spacing: 5px; margin: 20px 0; display: inline-block; }
+        .footer { margin-top: 40px; text-align: center; color: #a1a1aa; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>REVORA</h1>
+            <p>Automotive Care & Detailing</p>
+        </div>
+        <div class="content">
+            <h2 th:text="${title}">Verify Your Email</h2>
+            <p th:text="${message}">Your verification code is:</p>
+            <div class="otp-box" th:text="${otp}">123456</div>
+            <p>This OTP will expire in 5 minutes.</p>
+            <p th:text="${footerMsg}">If you did not request this, please ignore this email.</p>
+        </div>
+        <div class="footer">
+            &copy; <span th:text="${#dates.year(#dates.createNow())}"></span> REVORA Automotive Care & Detailing. For your security, never share this OTP with anyone.
+        </div>
+    </div>
+</body>
+</html>
