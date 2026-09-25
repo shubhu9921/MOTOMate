@@ -149,7 +149,7 @@ const Login = () => {
           
           <div className="bg-zinc-950 px-8 py-8 shadow-xl shadow-slate-200/50 rounded-2xl border border-zinc-800">
             <Link to="/" className="flex items-center justify-center gap-2 mb-6 group w-fit mx-auto">
-              <img src={RevoraLogo} alt="REVORA" className="h-10 lg:hidden" />
+              <img src={RevoraLogo} alt="REVORA" className="h-16 lg:hidden" />
             </Link>
             
             <h2 className="text-3xl font-extrabold text-zinc-50 text-center">Welcome Back</h2>
