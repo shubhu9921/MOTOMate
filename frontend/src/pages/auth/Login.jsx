@@ -96,7 +96,7 @@ const Login = () => {
   };
 
   return (
-    <div className="bg-zinc-950 flex font-sans min-h-screen">
+    <div className="bg-zinc-950 flex font-sans min-h-[calc(100vh-80px)]">
       {/* Left side - Image/Animation Slider */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-black overflow-hidden items-center justify-center group">
         

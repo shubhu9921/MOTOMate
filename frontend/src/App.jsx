@@ -15,7 +15,7 @@ import Navbar from './components/Navbar';
 // Global Navbar wrapper to handle location-based props
 const GlobalNavbar = () => {
   const location = useLocation();
-  const hiddenPaths = ['/login', '/register', '/forgot-password', '/unauthorized'];
+  const hiddenPaths = ['/unauthorized'];
   
   if (hiddenPaths.includes(location.pathname)) {
     return null;

@@ -81,7 +81,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="bg-zinc-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans min-h-screen">
+    <div className="bg-zinc-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans min-h-[calc(100vh-80px)]">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <Link to="/" className="flex justify-center items-center gap-2 mb-6">
           <img src={RevoraLogo} alt="REVORA" className="h-16 animate-pulse" />
