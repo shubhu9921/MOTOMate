@@ -115,7 +115,7 @@ const Login = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
         
         <div className="relative z-10 p-12 text-center text-zinc-50 max-w-lg">
-          <Car className="h-16 w-16 mx-auto mb-6 text-yellow-400 animate-bounce" />
+          <img src={RevoraLogo} alt="REVORA" className="h-24 mx-auto mb-6 animate-bounce" />
           
           <div className="min-h-[120px] transition-all duration-500">
             <h1 className="text-4xl font-bold mb-4 drop-shadow-lg animate-fade-in-up key={currentImageIndex}">

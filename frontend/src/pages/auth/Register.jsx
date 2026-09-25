@@ -111,7 +111,7 @@ const Register = () => {
         </div>
         
         <div className="relative z-10 p-12 text-center text-zinc-50 max-w-lg animate-fade-in-up">
-          <Car className="h-16 w-16 mx-auto mb-6 text-yellow-400 animate-bounce" />
+          <img src={RevoraLogo} alt="REVORA" className="h-24 mx-auto mb-6 animate-bounce" />
           <h1 className="text-4xl font-bold mb-4 drop-shadow-lg">Join REVORA</h1>
           <p className="text-lg text-slate-200 drop-shadow">
             Create an account to book top-tier detailing and washing services from the palm of your hand.

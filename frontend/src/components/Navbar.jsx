@@ -86,7 +86,7 @@ const Navbar = ({ isTransparent = false }) => {
   };
 
   return (
-    <nav className={isTransparent ? "absolute top-0 left-0 w-full z-50 bg-transparent pt-4" : "bg-transparent shadow-sm sticky top-0 z-50"}>
+    <nav className={isTransparent ? "absolute top-0 left-0 w-full z-50 bg-transparent pt-4" : "bg-zinc-950 shadow-sm sticky top-0 z-50"}>
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
